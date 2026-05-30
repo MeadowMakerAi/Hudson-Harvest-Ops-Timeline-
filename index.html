@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hudson Harvest · 2026 Field Operations Calendar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#f3efe4;
+    --paper-2:#ece6d6;
+    --panel:#faf7ef;
+    --panel-2:#f4ead9;
+    --ink:#1f2018;
+    --ink-soft:#5a5847;
+    --ink-faint:#8a8775;
+    --line:#cfc7af;
+    --line-soft:#e2dbc6;
+
+    /* plant lifecycle */
+    --prop:#6f9a3f;
+    --veg:#3f6130;
+    --stretch:#caa23a;
+    --budfill:#c0772c;
+    --harvest:#a8432a;
+    --transplant:#a8432a;
+
+    /* infrastructure */
+    --water:#5b8196;
+    --ipm:#7c7960;
+    --beneficials:#6b8e6b;
+
+    /* setup palette */
+    --setup-1:#c89c5f;
+    --setup-2:#b56e44;
+    --setup-3:#9a5a3a;
+    --setup-4:#6e4527;
+    --setup-5:#3d6a85;
+    --setup-6:#7a4e7d;
+    --setup-7:#4a5e3d;
+
+    /* gate / marker */
+    --flip:#c98a1e;
+    --frost:#37607a;
+    --forest:#2c4225;
+    --today:#a01c1c;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  html,body{background:var(--paper);min-height:100vh;}
+  body{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 20% 0%, #f7f3e8 0%, var(--paper) 55%);
+  }
+
+  /* ============ TOP BAR (always visible) ============ */
+  .topnav{
+    position:sticky;top:0;z-index:50;
+    background:var(--ink);color:#f3efe4;
+    padding:11px 24px;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:18px;flex-wrap:wrap;
+    border-bottom:1px solid #000;
+    box-shadow:0 2px 6px rgba(0,0,0,.18);
+  }
+  .topnav .brand{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  }
+  .topnav .brand .title{
+    font-family:'Fraunces',serif;font-size:17px;font-weight:700;
+    color:#f3efe4;letter-spacing:.005em;
+  }
+  .topnav .brand .title .sub{
+    color:#a8a190;font-weight:400;font-style:italic;font-size:14px;margin-left:4px;
+  }
+  .topnav .brand .pill{
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;
+    color:#f3efe4;background:rgba(255,255,255,.08);
+    padding:3px 9px;border-radius:2px;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .topnav .brand .pill.today{
+    color:#fff;background:var(--today);border-color:var(--today);
+  }
+  .topnav .brand .pill.today::before{
+    content:"●";margin-right:5px;font-size:8px;vertical-align:1px;
+    animation:pulse 1.8s ease-in-out infinite;display:inline-block;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:.4;}
+  }
+
+  /* TABS */
+  .tabs{display:flex;gap:2px;background:rgba(0,0,0,.2);padding:3px;border-radius:3px;}
+  .tab{
+    background:transparent;border:none;
+    color:#a8a190;cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    padding:7px 16px;
+    letter-spacing:.1em;text-transform:uppercase;
+    border-radius:2px;
+    transition:all .2s;
+  }
+  .tab:hover{color:#f3efe4;background:rgba(255,255,255,.05);}
+  .tab.active{
+    color:var(--ink);background:#f3efe4;
+  }
+
+  /* ============ PAGES ============ */
+  .page{
+    display:none;
+    padding:24px 28px 50px;
+  }
+  .page.active{display:block;animation:fadein .25s ease-out;}
+  @keyframes fadein{from{opacity:0;}to{opacity:1;}}
+
+  /* PAGE 1 = full-bleed gantt, max width */
+  .page-gantt{padding:18px 18px 30px;}
+  .gantt-page-wrap{max-width:none;}
+
+  /* PAGE 2 = ops reference, narrower */
+  .page-ops{max-width:1280px;margin:0 auto;}
+
+  /* ============ PAGE 1: GANTT ============ */
+  .gantt-header{
+    border-bottom:2.5px solid var(--ink);
+    padding-bottom:12px;margin-bottom:14px;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:14px;
+  }
+  .gantt-header h1{
+    font-family:'Fraunces',serif;
+    font-size:28px;font-weight:700;line-height:1.05;letter-spacing:-.01em;
+    color:var(--forest);
+  }
+  .gantt-header h1 .lt{color:var(--ink-faint);font-weight:400;font-style:italic;}
+  .gantt-header .gh-meta{
+    font-size:11px;color:var(--ink-soft);text-align:right;line-height:1.55;
+  }
+  .gantt-header .gh-meta b{color:var(--ink);font-weight:700;}
+  .gantt-header .gh-meta .pin{color:var(--today);font-weight:700;}
+
+  .stats-strip{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    margin-bottom:18px;
+  }
+  .stat-cell{background:var(--panel);padding:11px 13px;position:relative;}
+  .stat-cell.now{background:#fceee9;}
+  .stat-cell.cut{background:#f1f5e8;}
+  .stat-cell.frost{background:#eaf0f3;}
+  .stat-cell .k{font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;line-height:1.2;}
+  .stat-cell.now .k{color:var(--today);}
+  .stat-cell .v{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--forest);margin-top:4px;line-height:1;}
+  .stat-cell.now .v{color:var(--today);}
+  .stat-cell .v .u{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-soft);font-weight:500;display:block;margin-top:3px;letter-spacing:.04em;}
+  .stat-cell .seq{
+    position:absolute;top:6px;right:8px;
+    font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+    color:var(--ink-faint);opacity:.55;letter-spacing:.06em;
+  }
+
+  /* GANTT GRID - larger throughout */
+  .gantt-shell{
+    border:1.5px solid var(--ink);background:var(--panel);
+    overflow-x:auto;
+  }
+  .gantt{
+    display:grid;
+    grid-template-columns:220px repeat(21,minmax(72px,1fr));
+    grid-template-rows:32px 44px 78px 50px 110px 54px 54px 44px 42px 32px 50px;
+    min-width:1740px;position:relative;
+  }
+
+  .mband{grid-row:1 / 12;z-index:0;pointer-events:none;}
+  .mband.alt{background:rgba(63,97,48,0.045);}
+
+  .month{
+    grid-row:1;z-index:2;
+    font-family:'Fraunces',serif;font-size:16px;font-weight:700;
+    color:var(--forest);
+    justify-content:center;align-items:center;display:flex;
+    border-bottom:1px solid var(--line-soft);
+    letter-spacing:.04em;
+  }
+
+  /* week header */
+  .wk{
+    grid-row:2;z-index:2;
+    flex-direction:column;justify-content:center;align-items:center;display:flex;
+    border-right:1px solid var(--line-soft);
+    border-bottom:1.5px solid var(--ink);
+  }
+  .wk .wd{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.02em;}
+  .wk .wn{font-size:9px;color:var(--ink-faint);letter-spacing:.06em;margin-top:2px;font-weight:600;}
+  .wk.cur{background:#fceee9;}
+  .wk.cur .wd{color:var(--today);}
+
+  /* week header label */
+  .week-hdr{
+    grid-column:1;grid-row:2;z-index:2;
+    background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    border-bottom:1.5px solid var(--ink);
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  }
+
+  /* row labels - larger, structured */
+  .rlabel{
+    grid-column:1;z-index:2;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:0 14px;border-right:1.5px solid var(--ink);
+    background:var(--paper-2);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .rlabel .cat{
+    font-size:9px;color:var(--ink-faint);font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;
+    display:flex;align-items:center;gap:6px;
+  }
+  .rlabel .cat::before{
+    content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--ink-faint);
+  }
+  .rlabel.cat-setup .cat::before{background:var(--setup-3);}
+  .rlabel.cat-plant .cat::before{background:var(--veg);}
+  .rlabel.cat-water .cat::before{background:var(--water);}
+  .rlabel.cat-ipm .cat::before{background:var(--ipm);}
+  .rlabel.cat-harvest .cat::before{background:var(--harvest);}
+
+  .rlabel .rn{
+    font-size:14px;font-weight:700;letter-spacing:.01em;color:var(--ink);
+    margin-top:4px;line-height:1.1;
+  }
+  .rlabel .rs{
+    font-size:10px;color:var(--ink-faint);margin-top:3px;
+    letter-spacing:.04em;line-height:1.3;
+  }
+  .rlabel.ipm-tall{grid-row:9 / 11;}
+  .rlabel.h-row{grid-row:11;}
+
+  .rowbg{z-index:1;border-bottom:1px solid var(--line-soft);}
+  .rowbg.alt{background:rgba(146,103,55,0.04);}
+
+  /* setup row sub-lane dividers - 3 lanes */
+  .setup-divider{
+    grid-row:5; grid-column:2 / 23;
+    z-index:2; pointer-events:none;
+    align-self:start; height:1px;
+    border-top:1px dashed rgba(146,103,55,.28);
+  }
+  .setup-divider.d1{margin-top:36px;}
+  .setup-divider.d2{margin-top:73px;}
+
+  /* lane list embedded in setup rlabel */
+  .lane-list{
+    margin-top:8px;display:flex;flex-direction:column;gap:4px;
+  }
+  .lane-list .ll{
+    font-size:9.5px;font-weight:700;color:var(--ink-soft);
+    letter-spacing:.04em;line-height:1.2;
+    display:flex;align-items:center;gap:5px;
+  }
+  .lane-list .lm-icon{font-size:10px;font-weight:700;}
+
+  /* ---------- BARS ---------- */
+  .bar{
+    z-index:3;align-self:center;height:34px;
+    display:flex;align-items:center;
+    padding:0 11px;margin:0 2px;
+    font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    color:#fff;text-transform:uppercase;white-space:nowrap;overflow:hidden;
+    border-radius:3px;
+    transform-origin:left center;
+    animation:grow .55s cubic-bezier(.2,.7,.3,1) backwards;
+    box-shadow:0 1px 0 rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.16);
+    cursor:default;
+  }
+  .bar.slim{height:24px;font-size:10px;}
+  .bar.setup{height:26px;font-size:10.5px;}
+  .bar.setup.lane1{align-self:start;margin-top:6px;}
+  .bar.setup.lane2{align-self:start;margin-top:43px;}
+  .bar.setup.lane3{align-self:start;margin-top:79px;}
+  .bar .ic{margin-right:7px;opacity:.75;font-weight:400;font-size:13px;}
+  .bar:hover{filter:brightness(1.08);}
+
+  .b-prop{background:var(--prop);}
+  .b-4in{background:#86a85a;}
+  .b-harden{background:#a8bf7e;color:var(--forest);}
+  .b-veg{background:var(--veg);}
+  .b-stretch{background:var(--stretch);color:#3a2e08;}
+  .b-budfill{background:var(--budfill);}
+  .b-estab{background:#7ba0b2;color:#13313d;}
+  .b-drip{background:var(--water);}
+  .b-ipm{background:var(--ipm);}
+  .b-bene{background:var(--beneficials);}
+  .b-scout{background:#9a4f3a;}
+  .b-harvest{background:var(--harvest);}
+  .b-late{background:#caa392;color:#4a1f12;}
+
+  .b-set1{background:var(--setup-1);color:#3a2208;}
+  .b-set2{background:var(--setup-2);}
+  .b-set3{background:var(--setup-3);}
+  .b-set4{background:var(--setup-4);}
+  .b-set5{background:var(--setup-5);}
+  .b-set6{background:var(--setup-6);}
+  .b-set7{background:var(--setup-7);}
+
+  @keyframes grow{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+
+  /* point markers for tests/installs */
+  .pt{
+    z-index:4; align-self:center;
+    width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    margin:0 auto;position:relative;
+  }
+  .pt .px{
+    width:14px;height:14px;background:var(--ink);transform:rotate(45deg);
+    border:2px solid var(--panel);box-shadow:0 0 0 1.5px var(--ink);
+  }
+  .pt.water .px{background:var(--setup-5);box-shadow:0 0 0 1.5px var(--setup-5);}
+  .pt.tissue .px{background:var(--veg);box-shadow:0 0 0 1.5px var(--veg);}
+  .pt.spray .px{background:#7c7960;box-shadow:0 0 0 1.5px #7c7960;}
+  .pt .lab{
+    position:absolute;top:23px;left:50%;transform:translateX(-50%);
+    font-size:8.5px;font-weight:700;color:var(--ink);
+    white-space:nowrap;letter-spacing:.03em;text-transform:uppercase;
+    background:var(--panel);padding:1px 4px;border-radius:2px;
+    line-height:1.2;
+  }
+  .pt.water .lab{color:var(--setup-5);}
+  .pt.tissue .lab{color:var(--veg);}
+  .pt.spray .lab{color:#5e5b48;}
+
+  /* ---------- MILESTONES ---------- */
+  .ms{
+    grid-row:3;z-index:6;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    animation:pop .5s ease-out backwards;
+    padding:0 3px;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(-7px);}to{opacity:1;transform:translateY(0);}}
+  .ms .dia{
+    width:16px;height:16px;background:var(--ink);transform:rotate(45deg);
+    border:2px solid var(--panel);box-shadow:0 0 0 1.5px var(--ink);
+    margin-bottom:5px;flex:none;
+  }
+  .ms.major .dia{width:20px;height:20px;}
+  .ms .lab{
+    font-size:9.5px;font-weight:700;line-height:1.18;text-align:center;
+    color:var(--ink);text-transform:uppercase;letter-spacing:.02em;max-width:130px;
+  }
+  .ms .dt{font-size:9px;color:var(--ink-faint);font-weight:700;margin-top:3px;}
+  .ms.major .lab{font-size:10.5px;}
+  .ms-transplant .dia{background:var(--transplant);box-shadow:0 0 0 1.5px var(--transplant);}
+  .ms-transplant .lab{color:var(--transplant);}
+  .ms-flip .dia{background:var(--flip);box-shadow:0 0 0 1.5px var(--flip);}
+  .ms-flip .lab{color:#9a6a0c;}
+  .ms-frost .dia{background:var(--frost);box-shadow:0 0 0 1.5px var(--frost);}
+  .ms-frost .lab{color:var(--frost);}
+  .ms-cut .dia{background:var(--prop);box-shadow:0 0 0 1.5px var(--prop);}
+  .ms-cut .star{
+    color:var(--today);font-size:12px;font-weight:700;
+    line-height:1;margin-top:2px;
+  }
+
+  /* ---------- MARKER LINES ---------- */
+  .vline{
+    grid-row:3 / 12;z-index:5;pointer-events:none;
+    width:0;border-left:2.5px dashed var(--flip);
+    position:relative;
+  }
+  .vline.frost{border-left:3px solid var(--frost);}
+  .vline.solstice{border-left:2px dotted #d4a52a; opacity:.65;}
+  .vline .tag{
+    position:absolute;top:-3px;left:5px;
+    font-size:9px;font-weight:700;letter-spacing:.04em;
+    color:#9a6a0c;white-space:nowrap;
+  }
+  .vline.frost .tag{color:#fff;background:var(--frost);padding:3px 7px;left:-3px;border-radius:2px;}
+  .vline.solstice .tag{
+    font-size:8.5px;font-style:italic;color:#9a6a0c;letter-spacing:.08em;
+    background:rgba(250,247,239,.85);padding:1px 5px;left:4px;
+  }
+
+  .today-line{
+    grid-row:3 / 12; grid-column:2;
+    z-index:7;pointer-events:none;position:relative;
+  }
+  .today-line::before{
+    content:"";position:absolute;
+    left:50%;top:0;bottom:0;
+    border-left:3px solid var(--today);
+    box-shadow:0 0 8px rgba(160,28,28,.4);
+  }
+  .today-line .tlab{
+    position:absolute;left:calc(50% + 6px);top:-2px;
+    font-size:10px;font-weight:700;letter-spacing:.08em;
+    color:#fff;background:var(--today);padding:3px 8px;
+    white-space:nowrap;border-radius:2px;
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+
+  /* scroll hint */
+  .scroll-hint{
+    font-size:10px;color:var(--ink-faint);text-align:center;
+    padding:10px 8px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--paper-2);border:1px solid var(--line);border-bottom:none;
+    font-weight:700;
+  }
+  .scroll-hint .key{
+    display:inline-block;padding:1px 5px;background:var(--ink);color:#fff;
+    border-radius:2px;font-family:'JetBrains Mono';font-size:9px;margin:0 3px;
+  }
+
+  /* legend strip below gantt */
+  .legend-strip{
+    margin-top:18px;padding:12px 16px;
+    background:var(--panel);border:1.5px solid var(--ink);
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+  }
+  .legend-strip .lg-title{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:700;color:var(--ink);
+    padding-right:14px;border-right:1px solid var(--line);
+  }
+  .legend-strip .lgi{
+    display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--ink-soft);
+  }
+  .legend-strip .lgi .sw{width:22px;height:13px;border-radius:2px;flex:none;}
+  .legend-strip .lgi .dia-s{
+    width:12px;height:12px;background:var(--ink);transform:rotate(45deg);flex:none;margin:0 4px;
+  }
+  .legend-strip .lgi b{color:var(--ink);font-weight:700;}
+
+  /* ============ PAGE 2: OPS REFERENCE ============ */
+  .ops-header{
+    border-bottom:2.5px solid var(--ink);
+    padding-bottom:14px;margin-bottom:18px;
+  }
+  .ops-header h2{
+    font-family:'Fraunces',serif;
+    font-size:24px;font-weight:700;line-height:1.05;letter-spacing:-.01em;
+    color:var(--forest);
+  }
+  .ops-header h2 .lt{color:var(--ink-faint);font-weight:400;font-style:italic;}
+  .ops-header .sub{
+    font-size:11.5px;color:var(--ink-soft);margin-top:8px;max-width:880px;line-height:1.55;
+  }
+  .ops-header .sub b{color:var(--ink);font-weight:700;}
+
+  .band-label{
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin:18px 0 8px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .band-label::after{content:"";flex:1;height:1px;background:var(--line);}
+
+  .panel-box{border:1.5px solid var(--ink);background:var(--panel);margin-bottom:16px;}
+  .panel-box h3{
+    font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--forest);
+    padding:10px 16px;border-bottom:1.5px solid var(--ink);
+    background:var(--paper-2);
+    letter-spacing:.01em;
+  }
+  .pb-body{padding:6px 16px 14px;}
+
+  /* SOP table */
+  .sop-table{
+    width:100%;border-collapse:collapse;
+    font-size:11px;line-height:1.45;
+  }
+  .sop-table th{
+    text-align:left;padding:9px 12px;background:var(--paper-2);
+    border-bottom:1.5px solid var(--ink);
+    font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink);font-weight:700;
+  }
+  .sop-table td{
+    padding:9px 12px;border-bottom:1px solid var(--line-soft);
+    vertical-align:top;
+  }
+  .sop-table tr:last-child td{border-bottom:none;}
+  .sop-table .sop-d{font-weight:700;color:var(--ink);white-space:nowrap;width:110px;}
+  .sop-table .sop-c{font-weight:700;color:var(--setup-3);white-space:nowrap;width:140px;}
+
+  /* key dates table */
+  .kd-table{display:flex;flex-direction:column;}
+  .kd{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line);align-items:flex-start;}
+  .kd:last-child{border-bottom:none;}
+  .kd .kd-d{
+    font-size:10.5px;font-weight:700;color:#fff;background:var(--ink);
+    padding:4px 9px;border-radius:2px;white-space:nowrap;flex:none;min-width:104px;text-align:center;
+    margin-top:1px;letter-spacing:.04em;
+  }
+  .kd.x-today .kd-d{background:var(--today);}
+  .kd.x-cut .kd-d{background:var(--prop);}
+  .kd.x-tp .kd-d{background:var(--transplant);}
+  .kd.x-flip .kd-d{background:var(--flip);color:#3a2e08;}
+  .kd.x-frost .kd-d{background:var(--frost);}
+  .kd.x-prop-set .kd-d{background:var(--setup-2);}
+  .kd.x-field-set .kd-d{background:var(--setup-3);}
+  .kd.x-soil .kd-d{background:var(--setup-4);}
+  .kd.x-fence .kd-d{background:var(--setup-6);}
+  .kd.x-test .kd-d{background:var(--setup-5);}
+  .kd .kd-t{font-size:12px;line-height:1.5;color:var(--ink-soft);}
+  .kd .kd-t b{color:var(--ink);font-weight:700;}
+  .kd .kd-t .crew{
+    font-size:10px;color:var(--setup-3);font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;
+    display:block;margin-top:3px;
+  }
+  .kd .kd-t .res{
+    display:inline-block;font-size:10px;font-weight:700;
+    background:var(--paper-2);border:1px solid var(--line);
+    padding:1px 7px;border-radius:2px;margin:4px 4px 0 0;
+    color:var(--ink);letter-spacing:.04em;
+  }
+
+  /* legend grid */
+  .legend-grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:6px 18px;
+  }
+  .lg{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-soft);}
+  .lg .sw{width:22px;height:13px;border-radius:2px;flex:none;}
+  .lg .dia-s{width:12px;height:12px;background:var(--ink);transform:rotate(45deg);flex:none;margin:0 5px;}
+  .lg b{color:var(--ink);font-weight:700;}
+  .lg .lane-tag{
+    font-size:9px;letter-spacing:.06em;font-weight:700;
+    color:var(--ink-faint);text-transform:uppercase;margin-left:auto;
+  }
+
+  .ops-grid{
+    display:grid;grid-template-columns:1.45fr 1fr;gap:20px;
+  }
+  @media(max-width:880px){.ops-grid{grid-template-columns:1fr;}}
+
+  .note{
+    margin-top:14px;padding:11px 14px;border:1px solid var(--line);
+    border-left:4px solid var(--today);background:var(--panel);
+    font-size:11px;line-height:1.55;color:var(--ink-soft);
+  }
+  .note b{color:var(--ink);font-weight:700;}
+  .note .pin{color:var(--today);font-weight:700;}
+  .note + .note{border-left-color:var(--setup-3);}
+
+  footer{
+    margin-top:24px;border-top:1px solid var(--line);padding-top:12px;
+    font-size:9.5px;color:var(--ink-faint);line-height:1.6;
+  }
+
+  @media print{
+    .topnav{position:static;}
+    .page{display:block !important;page-break-after:always;}
+    .scroll-hint{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ TOP NAV ============ -->
+  <nav class="topnav">
+    <div class="brand">
+      <span class="title">Hudson Harvest 2026 <span class="sub">— Operations Calendar</span></span>
+      <span class="pill today">Today · May 28</span>
+      <span class="pill">v10 · Team Reference</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab(event,'gantt')">📅 Gantt</button>
+      <button class="tab" onclick="showTab(event,'dates')">📋 Key Dates &amp; Crew</button>
+      <button class="tab" onclick="showTab(event,'sop')">🛠 Soil SOP &amp; Notes</button>
+      <button class="tab" onclick="showTab(event,'legend')">⚙ Legend</button>
+    </div>
+  </nav>
+
+  <!-- ============ PAGE 1: GANTT ============ -->
+  <section id="page-gantt" class="page page-gantt active">
+
+    <div class="gantt-page-wrap">
+
+      <div class="gantt-header">
+        <h1>2026 Field Operations <span class="lt">— execution Gantt</span></h1>
+        <div class="gh-meta">
+          Montgomery NY · 41.5°N · Zone 6a/6b<br>
+          <span class="pin">Next gate: place TC nursery cut order — clones cut Mon Jun 1</span>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-cell now">
+          <div class="seq">NOW</div>
+          <div class="k">Today</div>
+          <div class="v">May 28<span class="u">Thu · Wk 01</span></div>
+        </div>
+        <div class="stat-cell cut">
+          <div class="seq">+04</div>
+          <div class="k">Cut Clones</div>
+          <div class="v">Jun 1<span class="u">Mon · TC nursery</span></div>
+        </div>
+        <div class="stat-cell">
+          <div class="seq">+18</div>
+          <div class="k">Receive Clones</div>
+          <div class="v">Jun 15<span class="u">Mon · arrive farm</span></div>
+        </div>
+        <div class="stat-cell">
+          <div class="seq">+21</div>
+          <div class="k">Up-pot to 4″</div>
+          <div class="v">Jun 18<span class="u">Thu · indoor prop</span></div>
+        </div>
+        <div class="stat-cell">
+          <div class="seq">+24 ☉</div>
+          <div class="k">Move to GH</div>
+          <div class="v">Jun 21<span class="u">Sun · solstice</span></div>
+        </div>
+        <div class="stat-cell frost">
+          <div class="seq">+27</div>
+          <div class="k">Field Transplant</div>
+          <div class="v">Jun 24–26<span class="u">when roots show</span></div>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        ‹ Scroll horizontally to see the full season · or use <span class="key">←</span> <span class="key">→</span> keys ›
+      </div>
+
+      <!-- GANTT -->
+      <div class="gantt-shell">
+      <div class="gantt" id="gantt">
+
+        <!-- month tint bands -->
+        <div class="mband"     style="grid-column:2 / 3;"></div>
+        <div class="mband alt" style="grid-column:3 / 8;"></div>
+        <div class="mband"     style="grid-column:8 / 12;"></div>
+        <div class="mband alt" style="grid-column:12 / 17;"></div>
+        <div class="mband"     style="grid-column:17 / 21;"></div>
+        <div class="mband alt" style="grid-column:21 / 23;"></div>
+
+        <!-- month headers -->
+        <div class="month" style="grid-column:1 / 2;background:var(--paper-2);border-right:1.5px solid var(--ink);"></div>
+        <div class="month" style="grid-column:2 / 3;">MAY</div>
+        <div class="month" style="grid-column:3 / 8;">JUNE</div>
+        <div class="month" style="grid-column:8 / 12;">JULY</div>
+        <div class="month" style="grid-column:12 / 17;">AUGUST</div>
+        <div class="month" style="grid-column:17 / 21;">SEPTEMBER</div>
+        <div class="month" style="grid-column:21 / 23;">OCT</div>
+
+        <!-- week header label cell -->
+        <div class="week-hdr">Week Beginning</div>
+        <div class="wk cur" style="grid-column:2;"><div class="wd">5/25</div><div class="wn">WK · 01 NOW</div></div>
+        <div class="wk" style="grid-column:3;"><div class="wd">6/1</div><div class="wn">WK · 02</div></div>
+        <div class="wk" style="grid-column:4;"><div class="wd">6/8</div><div class="wn">WK · 03</div></div>
+        <div class="wk" style="grid-column:5;"><div class="wd">6/15</div><div class="wn">WK · 04</div></div>
+        <div class="wk" style="grid-column:6;"><div class="wd">6/22</div><div class="wn">WK · 05</div></div>
+        <div class="wk" style="grid-column:7;"><div class="wd">6/29</div><div class="wn">WK · 06</div></div>
+        <div class="wk" style="grid-column:8;"><div class="wd">7/6</div><div class="wn">WK · 07</div></div>
+        <div class="wk" style="grid-column:9;"><div class="wd">7/13</div><div class="wn">WK · 08</div></div>
+        <div class="wk" style="grid-column:10;"><div class="wd">7/20</div><div class="wn">WK · 09</div></div>
+        <div class="wk" style="grid-column:11;"><div class="wd">7/27</div><div class="wn">WK · 10</div></div>
+        <div class="wk" style="grid-column:12;"><div class="wd">8/3</div><div class="wn">WK · 11</div></div>
+        <div class="wk" style="grid-column:13;"><div class="wd">8/10</div><div class="wn">WK · 12</div></div>
+        <div class="wk" style="grid-column:14;"><div class="wd">8/17</div><div class="wn">WK · 13</div></div>
+        <div class="wk" style="grid-column:15;"><div class="wd">8/24</div><div class="wn">WK · 14</div></div>
+        <div class="wk" style="grid-column:16;"><div class="wd">8/31</div><div class="wn">WK · 15</div></div>
+        <div class="wk" style="grid-column:17;"><div class="wd">9/7</div><div class="wn">WK · 16</div></div>
+        <div class="wk" style="grid-column:18;"><div class="wd">9/14</div><div class="wn">WK · 17</div></div>
+        <div class="wk" style="grid-column:19;"><div class="wd">9/21</div><div class="wn">WK · 18</div></div>
+        <div class="wk" style="grid-column:20;"><div class="wd">9/28</div><div class="wn">WK · 19</div></div>
+        <div class="wk" style="grid-column:21;"><div class="wd">10/5</div><div class="wn">WK · 20</div></div>
+        <div class="wk" style="grid-column:22;"><div class="wd">10/12</div><div class="wn">WK · 21</div></div>
+
+        <!-- row labels -->
+        <div class="rlabel cat-plant" style="grid-row:3;background:var(--panel-2);">
+          <div class="cat">Gate</div>
+          <div class="rn">Milestones</div>
+          <div class="rs">Hard dates</div>
+        </div>
+        <div class="rowbg" style="grid-row:4;grid-column:2 / 23;"></div>
+        <div class="rowbg alt" style="grid-row:5;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:6;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:7;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:8;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:9;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:10;grid-column:2 / 23;"></div>
+        <div class="rowbg" style="grid-row:11;grid-column:2 / 23;"></div>
+
+        <div class="rlabel cat-plant" style="grid-row:4;">
+          <div class="cat">01 · Plant</div>
+          <div class="rn">Propagation</div>
+          <div class="rs">Cut → 4″ pot → harden</div>
+        </div>
+        <div class="rlabel cat-setup" style="grid-row:5;background:#f4ead9;justify-content:flex-start;padding-top:10px;">
+          <div class="cat">02 · Build</div>
+          <div class="rn">Farm Setup</div>
+          <div class="lane-list">
+            <div class="ll"><span class="lm-icon" style="color:var(--setup-2);">▲</span> Prop infra</div>
+            <div class="ll"><span class="lm-icon" style="color:var(--setup-3);">◆</span> Field infra</div>
+            <div class="ll"><span class="lm-icon" style="color:var(--setup-6);">▼</span> Perimeter</div>
+          </div>
+        </div>
+        <div class="rlabel cat-plant" style="grid-row:6;">
+          <div class="cat">03 · Plant</div>
+          <div class="rn">Crop Stage</div>
+          <div class="rs">Field plant lifecycle</div>
+        </div>
+        <div class="rlabel cat-water" style="grid-row:7;">
+          <div class="cat">04 · Water</div>
+          <div class="rn">Irrigation</div>
+          <div class="rs">Drip / fertigation / tests</div>
+        </div>
+        <div class="rlabel cat-ipm" style="grid-row:8;">
+          <div class="cat">05 · Soil</div>
+          <div class="rn">Beneficials</div>
+          <div class="rs">Cover crop / companions</div>
+        </div>
+        <div class="rlabel cat-ipm ipm-tall">
+          <div class="cat">06 · IPM</div>
+          <div class="rn">Scouting</div>
+          <div class="rs">Biocontrol / botrytis watch</div>
+        </div>
+        <div class="rlabel cat-harvest h-row">
+          <div class="cat">07 · Harvest</div>
+          <div class="rn">Cut &amp; Cure</div>
+          <div class="rs">Main + late harvest</div>
+        </div>
+
+        <!-- ===== MARKER LINES ===== -->
+        <div class="today-line"><span class="tlab">TODAY</span></div>
+        <div class="vline solstice" style="grid-column:6;"><span class="tag">☉ SOLSTICE JUN 21</span></div>
+        <div class="vline"       style="grid-column:12;"><span class="tag">▲ FLIP ~AUG 6–8</span></div>
+        <div class="vline frost" style="grid-column:22;"><span class="tag">FROST ~OCT 14</span></div>
+
+        <!-- ===== SETUP ROW DIVIDERS ===== -->
+        <div class="setup-divider d1"></div>
+        <div class="setup-divider d2"></div>
+
+        <!-- ===== MILESTONES ===== -->
+        <div class="ms ms-cut" style="grid-column:3;animation-delay:.05s;">
+          <div class="dia"></div><div class="lab">Clone Cut</div><div class="dt">Mon Jun 1</div>
+        </div>
+        <div class="ms" style="grid-column:5;animation-delay:.12s;">
+          <div class="dia"></div><div class="lab">Clones Arrive at Farm</div><div class="dt">Mon Jun 15</div>
+        </div>
+        <div class="ms major ms-transplant" style="grid-column:6;animation-delay:.19s;">
+          <div class="dia"></div><div class="lab">Field Transplant · 3d</div><div class="dt">Jun 24–26</div>
+        </div>
+        <div class="ms" style="grid-column:8;animation-delay:.24s;">
+          <div class="dia" style="background:var(--setup-6);box-shadow:0 0 0 1.5px var(--setup-6);"></div>
+          <div class="lab" style="color:var(--setup-6);">Deer Fence Live</div><div class="dt">~Jul 4</div>
+        </div>
+        <div class="ms major ms-flip" style="grid-column:12;animation-delay:.30s;">
+          <div class="dia"></div><div class="lab">Photoperiod Flip</div><div class="dt">~Aug 6–8</div>
+        </div>
+        <div class="ms" style="grid-column:16;animation-delay:.37s;">
+          <div class="dia" style="background:#9a4f3a;box-shadow:0 0 0 1.5px #9a4f3a;"></div>
+          <div class="lab" style="color:#7d3322;">Bud-Rot Scout Daily</div><div class="dt">~Sep 1</div>
+        </div>
+        <div class="ms major ms-frost" style="grid-column:22;animation-delay:.44s;">
+          <div class="dia"></div><div class="lab">First Frost Wall</div><div class="dt">~Oct 14</div>
+        </div>
+
+        <!-- ===== PROPAGATION ROW (4) ===== -->
+        <!-- Rooting: Jun 1 cut through Jun 14 (cols 3-4) -->
+        <div class="bar b-prop"  style="grid-row:4;grid-column:3 / 5;animation-delay:.10s;" title="Jun 1 cut at TC nursery → root in rockwool. ~14 days. Arrival Jun 15.">
+          <span class="ic">✚</span>Rooting · TC Nursery
+        </div>
+        <!-- 4" Indoors: Jun 15-20 — spans cols 5-6, left ~38% -->
+        <div class="bar b-4in"  style="grid-row:4;grid-column:5 / 7;justify-self:start;width:38%;animation-delay:.20s;" title="Jun 15-20: clones arrive, 2 days under lights, up-pot to 4″, settle.">
+          4″ Indoors
+        </div>
+        <!-- Harden Off: Jun 21-23 — spans cols 5-6, centered straddling col 5/6 boundary -->
+        <div class="bar b-harden" style="grid-row:4;grid-column:5 / 7;justify-self:center;width:38%;animation-delay:.28s;" title="Jun 21 solstice → move to prop GH under shade cloth + humidifier. Preventative spray. Continues until field transplant Jun 24-26.">
+          Harden Off · GH
+        </div>
+
+        <!-- ===== SETUP ROW (5) — three lanes ===== -->
+        <!-- LANE 1: PROP INFRASTRUCTURE -->
+        <div class="bar setup lane1 b-set1" style="grid-row:5;grid-column:2 / 4;animation-delay:.08s;" title="Clean indoor prop space at farm, hang lights, plastic sheeting, humidifier. Continues until clones cut Jun 1; must be operational before clones arrive Jun 15.">
+          <span class="ic">⚒</span>Prep Prop Space
+        </div>
+        <div class="bar setup lane1 b-set2" style="grid-row:5;grid-column:4 / 6;animation-delay:.14s;" title="Build the rudimentary prop greenhouse for clone hardening. Ready by ~Jun 18.">
+          <span class="ic">⛺</span>Build Prop Greenhouse
+        </div>
+
+        <!-- LANE 2: FIELD INFRASTRUCTURE -->
+        <div class="bar setup lane2 b-set3" style="grid-row:5;grid-column:3 / 6;animation-delay:.20s;" title="Rework field irrigation: mains, Dosatron bench, filtration, pressure regulation. COMPLETE BY JUN 20.">
+          <span class="ic">≈</span>Rework Field Irrigation
+        </div>
+        <div class="bar setup lane2 b-set4" style="grid-row:5;grid-column:4 / 6;animation-delay:.26s;" title="Soil delivery, amend, fill 45-gal pots in place. CREW: 6-8 shovel + 1 tractor. ~2 days per 1000 pots. ~$2.50-$4/pot labor. Must finish before transplant Jun 24.">
+          <span class="ic">⛁</span>Soil + Fill Pots
+        </div>
+
+        <!-- LANE 3: PERIMETER / SECURITY -->
+        <div class="bar setup lane3 b-set6" style="grid-row:5;grid-column:4 / 8;animation-delay:.32s;" title="Install 1000-1500 LF deer fencing. Target Jul 4. If not ready, hotwire temp fence in place at transplant.">
+          <span class="ic">▮</span>Deer Fence Build (Target Jul 4)
+        </div>
+
+        <!-- ===== CROP STAGE ROW (6) ===== -->
+        <div class="bar b-harvest" style="grid-row:6;grid-column:6;justify-self:start;width:50%;padding:0 7px;animation-delay:.36s;" title="Field transplant - 3 day operation Jun 24-26. ALL infrastructure (irrigation, soil-filled pots, hardened plants) must be ready before this begins.">
+          Transplant
+        </div>
+        <div class="bar b-veg"     style="grid-row:6;grid-column:6 / 12;justify-self:end;width:92%;animation-delay:.40s;" title="True vegetative growth in the 45-gal container. ~Jun 27 to Aug 5. ~5.5 weeks.">
+          <span class="ic">❧</span>Field Vegetative Growth
+        </div>
+        <div class="bar b-stretch" style="grid-row:6;grid-column:12 / 15;animation-delay:.52s;" title="Flowering stretch, weeks 1-3 of flower.">
+          Flower Stretch
+        </div>
+        <div class="bar b-budfill" style="grid-row:6;grid-column:15 / 20;animation-delay:.62s;" title="Bud fill & ripening, weeks 4-8 of flower.">
+          Bud Fill &amp; Ripening
+        </div>
+
+        <!-- ===== IRRIGATION ROW (7) — bars + point markers ===== -->
+        <div class="bar b-estab" style="grid-row:7;grid-column:6 / 9;animation-delay:.46s;" title="Expanding-collar establish: water only the rootball + 6&quot; halo for first 14 days post-transplant. Prevents overpotting bog in fresh 45-gal of mix.">
+          <span class="ic">◉</span>Rootball-Only Water · 14d
+        </div>
+        <div class="bar b-drip" style="grid-row:7;grid-column:9 / 23;animation-delay:.58s;" title="Full drip ring fertigation, 3-5x 1 GPH PC emitters per pot via Dosatron.">
+          <span class="ic">≈</span>Full Drip Fertigation
+        </div>
+        <div class="pt water" style="grid-row:7;grid-column:4;animation-delay:.66s;" title="Baseline water test on well source — ~Jun 8. Results inform Soilscape design, filtration spec, Dosatron stock recipes.">
+          <div class="px"></div><div class="lab">H₂O Test</div>
+        </div>
+
+        <!-- ===== BENEFICIALS / COMPANIONS ROW (8) ===== -->
+        <div class="bar b-bene slim" style="grid-row:8;grid-column:5 / 7;animation-delay:.50s;" title="Sow beneficial / companion plant mix into pots ~3rd week of June, concurrent with transplant.">
+          🌱 Sow Companions
+        </div>
+        <div class="bar b-bene slim" style="grid-row:8;grid-column:7 / 22;animation-delay:.62s;" title="Companion plants continue through season — habitat for predator insects, pollinators.">
+          Established Companion Flora · IPM Habitat
+        </div>
+        <div class="pt tissue" style="grid-row:8;grid-column:9;animation-delay:.70s;" title="Plant tissue test #1 — late VEG. Confirms N/P/K/micros are correct before flower commitment. ~Jul 20.">
+          <div class="px"></div><div class="lab">Tissue Veg</div>
+        </div>
+        <div class="pt tissue" style="grid-row:8;grid-column:14;animation-delay:.74s;" title="Plant tissue test #2 — MID flower. Confirms nutrition through bud fill. ~Aug 24.">
+          <div class="px"></div><div class="lab">Tissue Flower</div>
+        </div>
+
+        <!-- ===== IPM ROWS (9 / 10) ===== -->
+        <div class="pt spray" style="grid-row:9;grid-column:6;justify-self:start;animation-delay:.50s;" title="Preventative spray during prop GH harden window — Trichoderma/Bacillus or similar broad-spectrum biological.">
+          <div class="px"></div><div class="lab">Prev Spray</div>
+        </div>
+        <div class="bar b-ipm slim" style="grid-row:9;grid-column:7 / 23;animation-delay:.55s;" title="Preventive biocontrols — predatory mites, Bt, potassium bicarbonate, weekly scouting.">
+          Preventive Biocontrols &amp; Weekly Scouting
+        </div>
+        <div class="bar b-scout slim" style="grid-row:10;grid-column:16 / 23;animation-delay:.68s;" title="DAILY bud-rot (Botrytis) scouting from ~Sep 1. Highest infection Sep-Oct.">
+          ⚠ Daily Bud-Rot Scouting
+        </div>
+
+        <!-- ===== HARVEST ROW (11) ===== -->
+        <div class="bar b-harvest" style="grid-row:11;grid-column:19 / 22;animation-delay:.72s;" title="Main harvest window for 7-8 week finishers. Sep 25 - Oct 8.">
+          <span class="ic">✂</span>Main Harvest
+        </div>
+        <div class="bar b-late" style="grid-row:11;grid-column:21 / 23;animation-delay:.78s;" title="Targeted late harvest — clean buds only, no overnight frost forecast.">
+          Late Harvest
+        </div>
+
+      </div>
+      </div>
+
+      <!-- compact legend strip below gantt -->
+      <div class="legend-strip">
+        <div class="lg-title">Legend</div>
+        <div class="lgi"><span class="sw" style="background:var(--prop);"></span> <b>Propagation</b></div>
+        <div class="lgi"><span class="sw" style="background:var(--setup-2);"></span> Build</div>
+        <div class="lgi"><span class="sw" style="background:var(--setup-3);"></span> Field Irrig</div>
+        <div class="lgi"><span class="sw" style="background:var(--setup-4);"></span> Soil + Fill</div>
+        <div class="lgi"><span class="sw" style="background:var(--setup-6);"></span> Fence</div>
+        <div class="lgi"><span class="sw" style="background:var(--veg);"></span> <b>Veg</b></div>
+        <div class="lgi"><span class="sw" style="background:var(--stretch);"></span> Stretch</div>
+        <div class="lgi"><span class="sw" style="background:var(--budfill);"></span> Bud Fill</div>
+        <div class="lgi"><span class="sw" style="background:var(--water);"></span> Irrigation</div>
+        <div class="lgi"><span class="sw" style="background:var(--beneficials);"></span> Beneficials</div>
+        <div class="lgi"><span class="sw" style="background:var(--ipm);"></span> IPM</div>
+        <div class="lgi"><span class="sw" style="background:var(--harvest);"></span> <b>Harvest</b></div>
+        <div class="lgi"><span class="dia-s" style="background:var(--setup-5);"></span> H₂O Test</div>
+        <div class="lgi"><span class="dia-s" style="background:var(--veg);"></span> Plant Tissue</div>
+        <div class="lgi"><span class="dia-s" style="background:#7c7960;"></span> Bio Spray</div>
+        <div class="lgi"><span class="sw" style="background:transparent;border-left:3px solid var(--today);width:3px;"></span> <b>TODAY</b></div>
+        <div class="lgi"><span class="sw" style="background:transparent;border-left:2px dotted #d4a52a;width:2px;opacity:.7;"></span> Solstice</div>
+        <div class="lgi"><span class="sw" style="background:transparent;border-left:2.5px dashed var(--flip);width:2px;"></span> Flip</div>
+        <div class="lgi"><span class="sw" style="background:transparent;border-left:3px solid var(--frost);width:2px;"></span> Frost</div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ============ PAGE 2: KEY DATES & CREW ============ -->
+  <section id="page-dates" class="page page-ops">
+
+    <div class="ops-header">
+      <h2>Key Dates &amp; Crew Assignments <span class="lt">— every milestone, every owner</span></h2>
+      <div class="sub">
+        Every dated action in the season. Each entry shows the <b>date</b>, the <b>action</b>, and the <b>crew or resource</b> required. Read top-to-bottom for chronological execution order.
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <div class="pb-body kd-table">
+        <div class="kd x-today">
+          <div class="kd-d">TODAY · 5/28</div>
+          <div class="kd-t"><b>Place TC nursery cut order.</b> Confirm cut date + clone count. Also today: order 4″ pots, source prop greenhouse materials, source 1000–1500 LF deer fencing materials, kick off baseline water test to lab. Contact Soilscape Solutions to scope irrigation design engagement.
+            <span class="crew">Owner / Ops Lead</span>
+          </div>
+        </div>
+        <div class="kd x-prop-set">
+          <div class="kd-d">5/28 – 6/1</div>
+          <div class="kd-t"><b>Prep INDOOR prop space:</b> clean, hang lights, plastic, humidifier. Operational <b>before clones arrive Jun 15</b>.
+            <span class="crew">2-person crew · ~5 days</span>
+          </div>
+        </div>
+        <div class="kd x-cut">
+          <div class="kd-d">MON 6/1</div>
+          <div class="kd-t"><b>Clones cut at TC nursery.</b> ~14-day root cycle through Jun 14, arrival Jun 15.
+            <span class="crew">TC nursery</span>
+          </div>
+        </div>
+        <div class="kd x-prop-set">
+          <div class="kd-d">6/1 – 6/18</div>
+          <div class="kd-t"><b>Build PROP GREENHOUSE</b> (rudimentary hardening structure). Ready by <b>~Jun 18</b> for the harden window.
+            <span class="crew">Build crew · poly + hoops + shade cloth</span>
+          </div>
+        </div>
+        <div class="kd x-field-set">
+          <div class="kd-d">6/1 – 6/22</div>
+          <div class="kd-t"><b>Rework field irrigation</b> per Soilscape design — mains, Dosatron bench, filtration, PRV. <b>Must be live + tested by Jun 22</b> (2-day buffer before transplant starts Jun 24).
+            <span class="crew">Irrigation lead (Alec?) + 2 helpers</span>
+          </div>
+        </div>
+        <div class="kd x-test">
+          <div class="kd-d">~6/8</div>
+          <div class="kd-t"><b>Baseline water test.</b> Send well sample to lab — informs Soilscape design, filtration spec, Dosatron stock recipes.
+            <span class="res">Lab kit</span><span class="res">Cooler ship</span>
+          </div>
+        </div>
+        <div class="kd x-soil">
+          <div class="kd-d">6/8 – 6/22</div>
+          <div class="kd-t"><b>Soil delivery + fill 45-gal pots in place.</b> Must finish + settle by Jun 22 — pots wet and ready for transplant Jun 24. See Soil SOP tab.
+            <span class="crew">6–8 shovel · 1 tractor · 1 hose</span>
+            <span class="res">~2 d / 1k pots</span><span class="res">~$2.50–4/pot</span>
+          </div>
+        </div>
+        <div class="kd">
+          <div class="kd-d">MON 6/15</div>
+          <div class="kd-t"><b>Clones arrive at farm.</b> Move into indoor prop space under lights. Hold <b>2 days</b> for recovery.
+            <span class="crew">Prop crew</span>
+          </div>
+        </div>
+        <div class="kd">
+          <div class="kd-d">~6/17</div>
+          <div class="kd-t"><b>Up-pot to 4″ pots.</b> Settle <b>2 more days</b> under lights (Jun 17–18).
+            <span class="crew">Prop crew · ~1 day</span>
+            <span class="res">4″ pots</span><span class="res">Mycorrhizae</span>
+          </div>
+        </div>
+        <div class="kd x-fence">
+          <div class="kd-d">6/15 – 7/4</div>
+          <div class="kd-t"><b>Build deer fence — 1,000–1,500 LF perimeter.</b> Target Jul 4 live. <b>If slipping</b>: install hotwire temp fence before transplant (Jun 24).
+            <span class="crew">Fence crew or contractor</span>
+          </div>
+        </div>
+        <div class="kd x-prop-set">
+          <div class="kd-d">SUN 6/21</div>
+          <div class="kd-t"><b>Move clones outside to PROP GREENHOUSE.</b> Solstice day. Shade cloth + humidifier. <b>Apply preventative spray</b> (Trichoderma/Bacillus). Continues until field transplant.
+            <span class="crew">Prop crew · daily checks</span>
+            <span class="res">Shade cloth</span><span class="res">Humidifier</span><span class="res">Bio-spray</span>
+          </div>
+        </div>
+        <div class="kd x-tp">
+          <div class="kd-d">6/24 – 6/26</div>
+          <div class="kd-t"><b>FIELD TRANSPLANT to 45-gal · 3-day operation.</b> Starts <i>when roots show through the bottom of the 4″ pots</i>. Prerequisites must ALL be in place: irrigation live + tested, pots filled + settled, hotwire temp fence up, clones hardened. Mycorrhizae at rootball. Delay 5 days if nights &lt;50°F. Sow beneficial companion mix concurrent.
+            <span class="crew">Full crew · 3 days</span>
+          </div>
+        </div>
+        <div class="kd x-field-set">
+          <div class="kd-d">~6/27 – 7/1</div>
+          <div class="kd-t"><b>Install T-posts + trellis netting</b> immediately after transplant.
+            <span class="crew">Field crew + T-post driver</span>
+          </div>
+        </div>
+        <div class="kd x-field-set">
+          <div class="kd-d">~6/27 – 7/5</div>
+          <div class="kd-t"><b>Install soil moisture sensors + security cameras.</b> Baseline readings + perimeter coverage from day one.
+            <span class="res">Sensors</span><span class="res">Cameras</span><span class="res">Network</span>
+          </div>
+        </div>
+        <div class="kd x-test">
+          <div class="kd-d">~7/20</div>
+          <div class="kd-t"><b>Plant tissue test #1 (late veg).</b> Confirms N/P/K/micros before flower commitment.
+            <span class="res">Lab kit</span>
+          </div>
+        </div>
+        <div class="kd x-flip">
+          <div class="kd-d">~8/6 – 8/8</div>
+          <div class="kd-t"><b>Photoperiod flip.</b> Daylength crosses 14 hr at 41.5°N. End of veg.</div>
+        </div>
+        <div class="kd x-test">
+          <div class="kd-d">~8/24</div>
+          <div class="kd-t"><b>Plant tissue test #2 (mid-flower).</b> Confirms nutrition through bud fill.
+            <span class="res">Lab kit</span>
+          </div>
+        </div>
+        <div class="kd">
+          <div class="kd-d">~9/1</div>
+          <div class="kd-t"><b>Daily bud-rot scouting begins.</b> Botrytis peaks Sep–Oct.
+            <span class="crew">Field lead · daily walk</span>
+          </div>
+        </div>
+        <div class="kd">
+          <div class="kd-d">9/25 – 10/8</div>
+          <div class="kd-t"><b>Main harvest window.</b> Stage a rush-harvest crew option for bad weather.
+            <span class="crew">Full crew + temps</span>
+          </div>
+        </div>
+        <div class="kd x-frost">
+          <div class="kd-d">~10/14</div>
+          <div class="kd-t"><b>Average first frost — hard wall.</b> Late harvest only on clean, frost-free forecasts.</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Operations calendar v10 · Hudson Harvest 2026 outdoor season · Montgomery NY (41.5°N) · Current as of Thursday May 28, 2026.
+    </footer>
+
+  </section>
+
+  <!-- ============ PAGE 3: SOIL SOP & CRITICAL NOTES ============ -->
+  <section id="page-sop" class="page page-ops">
+
+    <div class="ops-header">
+      <h2>Soil SOP &amp; Critical-Path Notes <span class="lt">— procedures and dependencies</span></h2>
+      <div class="sub">
+        Detailed procedure for the soil delivery and pot-fill operation (week of June 8) and the four critical-path notes that flag dependencies not visible on the Gantt alone.
+      </div>
+    </div>
+
+    <div class="band-label">Soil Delivery &amp; Pot-Fill SOP · Week of June 8</div>
+    <div class="panel-box">
+      <table class="sop-table">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Crew / Equipment</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="sop-d">1 · Stage</td>
+            <td class="sop-c">Tractor / skid-steer · 1 operator</td>
+            <td>Soil delivered (or mixed) at a central pad. Tractor drops staging piles every few rows so no shovel-throw is more than ~10 ft to a pot. Pre-position empty 45-gal fabric pots in final field grid.</td>
+          </tr>
+          <tr>
+            <td class="sop-d">2 · Fill</td>
+            <td class="sop-c">6–8 shovel crew</td>
+            <td>Hand-fill to ~3″ below rim. Pace: <b>~2 days for 1,000 pots</b>, <b>~4 days for 2,000</b>, linear. Best risk-adjusted method — gentle on soil structure, low capital, proven.</td>
+          </tr>
+          <tr>
+            <td class="sop-d">3 · Settle</td>
+            <td class="sop-c">1 person · irrigation hose</td>
+            <td>Hose-water each pot to runoff the same day it's filled. Settles medium, removes air pockets, primes biology. Top off any pots that sink &gt;2″.</td>
+          </tr>
+          <tr>
+            <td class="sop-d">Cost</td>
+            <td class="sop-c">~$2.50–$4 / pot labor</td>
+            <td>At 1,000 pots: ~$2,500–$4,000 labor only. Soil + amendments are separate (see plan doc, est. ~$70k at 1,000 plant scale).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="band-label">Critical-Path Notes</div>
+
+    <div class="note">
+      <b><span class="pin">Transplant trigger is biological, not calendar.</span></b>
+      Jun 24–26 is the planned window — actual transplant starts <b>when roots show through the bottom of the 4″ pots</b>. If they're not rooting through by Jun 24, hold and check daily. Transplanting before roots are ready stunts the plant; transplanting late costs veg days against the Aug 6 flip.
+    </div>
+
+    <div class="note">
+      <b>Irrigation is the hidden critical path.</b> Soilscape engagement this week → design by ~Jun 7–10 → parts ordered → install + test live by <b>Jun 22</b> (2 days before transplant Jun 24). All infrastructure — irrigation, filled pots, perimeter, hardened plants — must be in place <b>before</b> the 3-day transplant operation begins. No exceptions.
+    </div>
+
+    <div class="note">
+      <b>Perimeter logic.</b> Deer fence target Jul 4 protects the crop in early flower stretch. <b>Hotwire temp fence must be operational by transplant (Jun 24)</b> — unprotected seedlings for even 5+ nights = devastating browse loss. The Jul 4 target is for the permanent fence; the temp fence is non-negotiable.
+    </div>
+
+    <div class="note">
+      <b>Three parallel build streams.</b> Prop infrastructure (▲ prop prep + greenhouse build), field infrastructure (◆ irrigation + soil + pots), and perimeter (▼ deer fence) all run concurrently May 28 – Jun 22. Each stream needs an owner and an honest daily check that it'll land on time. Stream slippage is invisible until convergence — by then it's too late to recover.
+    </div>
+
+    <footer>
+      Operations calendar v10 · Hudson Harvest 2026 outdoor season · Montgomery NY (41.5°N) · Current as of Thursday May 28, 2026.
+    </footer>
+
+  </section>
+
+  <!-- ============ PAGE 4: LEGEND ============ -->
+  <section id="page-legend" class="page page-ops">
+
+    <div class="ops-header">
+      <h2>Legend <span class="lt">— all bar colors, markers, and lines on the Gantt</span></h2>
+      <div class="sub">
+        Reference for every visual element used on the Gantt page. Grouped by category.
+      </div>
+    </div>
+
+    <div class="band-label">Plant Lifecycle Stages</div>
+    <div class="panel-box">
+      <div class="pb-body">
+        <div class="legend-grid">
+          <div class="lg"><span class="sw" style="background:var(--prop);"></span> <b>Rooting</b> · clone cut to arrival</div>
+          <div class="lg"><span class="sw" style="background:#86a85a;"></span> <b>4″ Indoors</b> · indoor prop space</div>
+          <div class="lg"><span class="sw" style="background:#a8bf7e;"></span> <b>Harden Off · GH</b> · prop greenhouse</div>
+          <div class="lg"><span class="sw" style="background:var(--transplant);"></span> <b>Transplant</b> · 3-day field operation</div>
+          <div class="lg"><span class="sw" style="background:var(--veg);"></span> <b>Vegetative growth</b> · in 45-gal pots</div>
+          <div class="lg"><span class="sw" style="background:var(--stretch);"></span> <b>Flower stretch</b> · wk 1–3 of flower</div>
+          <div class="lg"><span class="sw" style="background:var(--budfill);"></span> <b>Bud fill &amp; ripen</b> · wk 4–8 of flower</div>
+          <div class="lg"><span class="sw" style="background:var(--harvest);"></span> <b>Main harvest</b> · ~Sep 25 – Oct 8</div>
+          <div class="lg"><span class="sw" style="background:#caa392;"></span> <b>Late harvest</b> · clean buds, no frost</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band-label">Setup &amp; Infrastructure (3 lanes)</div>
+    <div class="panel-box">
+      <div class="pb-body">
+        <div class="legend-grid">
+          <div class="lg"><span class="sw" style="background:var(--setup-1);"></span> <b>Prep Prop Space</b> <span class="lane-tag">▲ Prop</span></div>
+          <div class="lg"><span class="sw" style="background:var(--setup-2);"></span> <b>Build Prop GH</b> <span class="lane-tag">▲ Prop</span></div>
+          <div class="lg"><span class="sw" style="background:var(--setup-3);"></span> <b>Rework Irrigation</b> <span class="lane-tag">◆ Field</span></div>
+          <div class="lg"><span class="sw" style="background:var(--setup-4);"></span> <b>Soil + Fill Pots</b> <span class="lane-tag">◆ Field</span></div>
+          <div class="lg"><span class="sw" style="background:var(--setup-6);"></span> <b>Deer Fence Build</b> <span class="lane-tag">▼ Perim</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band-label">Ongoing Systems</div>
+    <div class="panel-box">
+      <div class="pb-body">
+        <div class="legend-grid">
+          <div class="lg"><span class="sw" style="background:var(--water);"></span> <b>Irrigation</b> · drip / fertigation</div>
+          <div class="lg"><span class="sw" style="background:#7ba0b2;"></span> <b>Rootball-Only Water</b> · first 14 days</div>
+          <div class="lg"><span class="sw" style="background:var(--beneficials);"></span> <b>Beneficial companions</b></div>
+          <div class="lg"><span class="sw" style="background:var(--ipm);"></span> <b>IPM</b> · biocontrol &amp; scouting</div>
+          <div class="lg"><span class="sw" style="background:#9a4f3a;"></span> <b>Bud-rot scouting</b> · daily Sep+</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band-label">Point Markers (diamonds)</div>
+    <div class="panel-box">
+      <div class="pb-body">
+        <div class="legend-grid">
+          <div class="lg"><span class="dia-s" style="background:var(--transplant);"></span> <b>Major milestone</b> / gate</div>
+          <div class="lg"><span class="dia-s" style="background:var(--setup-5);"></span> <b>Water test</b> (well baseline)</div>
+          <div class="lg"><span class="dia-s" style="background:var(--veg);"></span> <b>Plant tissue test</b></div>
+          <div class="lg"><span class="dia-s" style="background:#7c7960;"></span> <b>Bio spray</b> (preventative)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band-label">Vertical Marker Lines</div>
+    <div class="panel-box">
+      <div class="pb-body">
+        <div class="legend-grid">
+          <div class="lg"><span class="sw" style="background:transparent;border-left:3px solid var(--today);width:3px;"></span> &nbsp;<b>TODAY</b> · current position (May 28)</div>
+          <div class="lg"><span class="sw" style="background:transparent;border-left:2px dotted #d4a52a;width:2px;opacity:.7;"></span> &nbsp;<b>Solstice</b> · Jun 21 (way-finder)</div>
+          <div class="lg"><span class="sw" style="background:transparent;border-left:2.5px dashed var(--flip);width:2px;"></span> &nbsp;<b>Photoperiod flip</b> · ~Aug 6–8</div>
+          <div class="lg"><span class="sw" style="background:transparent;border-left:3px solid var(--frost);width:2px;"></span> &nbsp;<b>Frost wall</b> · ~Oct 14 (hard stop)</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Operations calendar v10 · Hudson Harvest 2026 outdoor season · Montgomery NY (41.5°N) · Current as of Thursday May 28, 2026.
+    </footer>
+
+  </section>
+
+<script>
+  function showTab(e, name){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    e.currentTarget.classList.add('active');
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+
+  // arrow-key horizontal scroll on Gantt page
+  document.addEventListener('keydown', function(e){
+    if(!document.getElementById('page-gantt').classList.contains('active')) return;
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+    var shell = document.querySelector('.gantt-shell');
+    if(!shell) return;
+    if(e.key==='ArrowRight'){ shell.scrollLeft += 200; e.preventDefault(); }
+    if(e.key==='ArrowLeft'){ shell.scrollLeft -= 200; e.preventDefault(); }
+  });
+</script>
+
+</body>
+</html>
