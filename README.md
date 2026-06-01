@@ -1,17 +1,16 @@
-# Hudson Harvest 2026 — Field Operations Calendar
+# Hudson Harvest 2026 — Operations Hub
 
-Interactive operations calendar for the Hudson Harvest 2026 outdoor cannabis cultivation season at Montgomery, NY (41.5°N, Zone 6a/6b).
+Operations hub for the Hudson Harvest 2026 outdoor cannabis cultivation season at Montgomery, NY (41.5°N, Zone 6a/6b). A small, durable static site: a landing page (`index.html`) that links out to self-contained HTML documents, one per project/topic. New documents drop in as siblings over time.
 
-**Live URL:** [hudson-harvest-ops.vercel.app](https://hudson-harvest-ops.vercel.app) *(update once deployed)*
+**Live URL:** [opstimeline.vercel.app](https://opstimeline.vercel.app) (also serves husdonharvest.space). Auto-deploys from `main`.
 
 ## What's inside
 
-A single-file static HTML application with four tabs:
+Flat static site — one self-contained HTML file per page, all at the repo root:
 
-- **📅 Gantt** — full-season execution timeline, May 25 through October 18. Bars, milestones, and marker lines for every workstream.
-- **📋 Key Dates & Crew** — chronological action list with crew and resource assignments for every milestone.
-- **🛠 Soil SOP & Notes** — soil delivery and pot-fill procedure for the week of June 8, plus four critical-path notes.
-- **⚙ Legend** — full reference for every bar color, marker, and line on the Gantt.
+- **`index.html`** — the hub landing page (cards + timeline linking to every document below).
+- **`gantt.html`** — 📅 Field Operations Calendar: the full-season execution Gantt, with Key Dates & Crew, Soil SOP & Notes, and Legend tabs. This is the original calendar, formerly served as `index.html`.
+- **`field-build-plan.html`** — 🛠 2026 Field Build Plan: the ~30-day build to get 1,000 plants in the field (warehouse & tents, prop house, irrigation, the 45-gal pot matrix, budget).
 
 ## Season anchors
 
@@ -35,15 +34,19 @@ All three must converge by Jun 22 — two days before transplant begins.
 
 ## How to update
 
-This site is deployed automatically from this repo. To push a new version:
+This site is deployed automatically from this repo (Vercel auto-deploys from `main` in ~30 seconds; live URLs stay stable so team bookmarks don't break).
 
-1. Replace `index.html` with the new HTML file (rename the new file to `index.html` before uploading).
-2. Commit the change — Vercel auto-deploys within ~30 seconds.
-3. The live URL stays the same; team bookmarks don't break.
+**To add a page:** drop its `.html` file at the repo root and add a matching card + timeline entry to `index.html`. Keep the link relative — `href="my-page.html"`.
+
+**To retire a page:** remove its card from `index.html` (and optionally delete the file).
+
+**To update an existing page** (e.g. a new Gantt version): replace that page's `.html` file in place, keeping the same filename so the hub link still resolves. Commit — Vercel redeploys automatically.
+
+Keep it flat: no build step, no framework, no bundler, no `/public` or `/dist`, no subfolders. Every document is a single self-contained HTML file, and all internal links are relative — never absolute paths or hardcoded full domains.
 
 ## Format
 
-Single self-contained HTML file. No build step, no dependencies installed at deploy time. Renders in any modern browser; works on phones (Gantt scrolls horizontally). Fonts pulled from Google Fonts at page load.
+Self-contained HTML files, one per page, served flat from the repo root. No build step, no dependencies installed at deploy time. Renders in any modern browser; works on phones (the Gantt scrolls horizontally). Fonts pulled from Google Fonts at page load.
 
 ## Versioning
 

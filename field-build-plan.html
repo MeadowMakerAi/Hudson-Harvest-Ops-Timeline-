@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hudson Harvest — 2026 Field Build Plan</title>
+<style>
+  :root{
+    --ink:#1b1c18; --ink-soft:#4a4d44; --paper:#f6f4ec; --card:#fffdf7;
+    --line:#d9d4c4; --green:#2f5d3a; --green-d:#244a2e; --green-soft:#e7efe4;
+    --rust:#a8421f; --amber:#9a6308; --amber-soft:#f7eccf; --blue:#23506b;
+    --blue-soft:#e2edf3; --violet:#5b3fa6; --shadow:rgba(40,38,28,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper);line-height:1.55;padding:0 0 90px}
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px}
+
+  header.masthead{background:var(--green);color:#f3f0e6;padding:34px 0 30px;border-bottom:5px solid var(--rust)}
+  .masthead .wrap{display:flex;flex-direction:column;gap:7px}
+  .kicker{font-family:Verdana,Geneva,sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#bcd0b8}
+  h1{font-size:31px;line-height:1.12;font-weight:700}
+  .sub{font-family:Verdana,Geneva,sans-serif;font-size:13.5px;color:#dbe6d6;max-width:66ch}
+  .stamp{font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#a9c2a4;margin-top:4px}
+
+  h2{font-size:21px;color:var(--green);margin:40px 0 4px;padding-top:18px;border-top:2px solid var(--line);display:flex;align-items:baseline;gap:10px}
+  h2 .num{font-family:Verdana,sans-serif;font-size:13px;background:var(--green);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-weight:700}
+  h3{font-size:16px;color:var(--blue);margin:22px 0 8px;font-family:Verdana,sans-serif;font-weight:700}
+  p{margin:8px 0;font-size:15.5px}
+  .lede{font-size:16px;color:var(--ink-soft);margin:10px 0 4px}
+  ul,ol{margin:8px 0 8px 22px;font-size:15.5px}
+  li{margin:5px 0}
+  strong{color:var(--ink)}
+
+  .owners{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 2px}
+  .owner{font-family:Verdana,sans-serif;font-size:11px;font-weight:700;color:#fff;background:var(--ink-soft);padding:3px 10px;border-radius:20px;display:inline-block}
+  .owner.lead{background:var(--green)}
+  .pendnote{font-family:Verdana,sans-serif;font-size:11px;color:var(--ink-soft);font-style:italic;margin-top:3px}
+
+  /* timing strip per project */
+  .tstrip{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .chip{font-family:Verdana,sans-serif;font-size:12px;border-radius:7px;padding:7px 12px;line-height:1.25;flex:1 1 auto;min-width:150px}
+  .chip b{display:block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;opacity:.85}
+  .chip.order{background:var(--amber-soft);color:#5e3d04;border:1px solid #e6cf99}
+  .chip.build{background:var(--blue-soft);color:#16384c;border:1px solid #b9d2df}
+  .chip.ready{background:var(--green-soft);color:#1d3a24;border:1px solid #bcd3b6}
+
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px;background:var(--card)}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:Verdana,sans-serif;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--green)}
+  tbody tr:nth-child(even){background:#faf8f0}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:Verdana,sans-serif}
+  tfoot td{font-weight:700;border-top:2px solid var(--green);background:var(--green-soft)}
+  caption{caption-side:top;text-align:left;font-family:Verdana,sans-serif;font-size:11px;color:var(--ink-soft);padding-bottom:4px}
+
+  .keyfacts{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+  .fact{flex:1 1 130px;background:var(--green-soft);border:1px solid #cdddc8;border-radius:9px;padding:12px 14px;text-align:center}
+  .fact .v{font-size:23px;font-weight:700;color:var(--green);font-family:Verdana,sans-serif}
+  .fact .l{font-family:Verdana,sans-serif;font-size:10.5px;letter-spacing:.03em;color:var(--ink-soft);text-transform:uppercase;margin-top:2px}
+
+  .box{padding:13px 16px;border-radius:0 8px 8px 0;margin:13px 0;font-size:14.5px}
+  .box b.h{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:3px}
+  .scale{border-left:4px solid var(--amber);background:var(--amber-soft)}
+  .scale b.h{color:var(--amber)}
+  .flag{border-left:4px solid var(--rust);background:#f7e7e0}
+  .flag b.h{color:var(--rust)}
+  .note{border-left:4px solid var(--blue);background:var(--blue-soft)}
+  .note b.h{color:var(--blue)}
+  .heur{border-left:4px solid var(--violet);background:#ece6f7}
+  .heur b.h{color:var(--violet)}
+
+  .gate{background:var(--blue);color:#eef4f8;padding:15px 18px;border-radius:9px;margin:14px 0}
+  .gate b.h{font-family:Verdana,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#aed0e4;display:block;margin-bottom:4px}
+  .gate a{color:#cfe6f2}
+
+  .src{font-family:Verdana,sans-serif;font-size:10.5px;color:var(--amber);font-style:normal}
+
+  /* master gantt */
+  .gantt{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:9px;background:var(--card)}
+  .gtable{min-width:780px;width:100%;border-collapse:collapse;font-family:Verdana,sans-serif;font-size:11px}
+  .gtable th{background:var(--green);color:#fff;padding:8px 4px;text-align:center;font-size:10px}
+  .gtable th:first-child{text-align:left;width:210px}
+  .gtable td{border-bottom:1px solid var(--line);border-right:1px solid #ece8da;padding:0;height:28px}
+  .gtable td.lab{padding:5px 9px;font-size:11px;font-weight:700;color:var(--ink);text-align:left;background:#faf8f0;border-right:2px solid var(--line);white-space:nowrap}
+  .gtable td.lab.crit{color:var(--rust)}
+  .bar{height:15px;border-radius:4px;margin:0 2px;display:block}
+  .b-proc{background:var(--amber)}
+  .b-prep{background:#8a8a78}
+  .b-wh{background:var(--blue)}
+  .b-prop{background:var(--green)}
+  .b-irr{background:var(--violet)}
+  .b-soil{background:#b5791a}
+  .b-plant{background:var(--rust)}
+  .star{color:var(--rust);font-weight:700}
+  .glegend{display:flex;flex-wrap:wrap;gap:13px;padding:10px 12px;font-family:Verdana,sans-serif;font-size:11px;color:var(--ink-soft);border-top:1px solid var(--line)}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+
+  .toc{font-family:Verdana,sans-serif;font-size:13px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:14px 18px;margin:18px 0;columns:2;column-gap:26px}
+  @media(max-width:640px){.toc{columns:1}}
+  .toc a{color:var(--green);text-decoration:none;display:block;padding:3px 0;break-inside:avoid}
+  .toc a:hover{text-decoration:underline}
+
+  .svgwrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:#fbfaf4;padding:8px;margin:14px 0}
+  .footnote{font-size:12.5px;color:var(--ink-soft);font-style:italic;margin-top:6px}
+  footer{margin-top:42px;padding-top:16px;border-top:2px solid var(--line);font-family:Verdana,sans-serif;font-size:12px;color:var(--ink-soft)}
+  .check{list-style:none;margin-left:0}
+  .check li{padding-left:26px;position:relative}
+  .check li:before{content:"\2610";position:absolute;left:2px;top:-1px;font-size:17px;color:var(--green)}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="kicker">Hudson Harvest &middot; 2026 Outdoor Season</div>
+    <h1>Field Build Plan</h1>
+    <div class="sub">Everything that has to be ordered, built, and ready in the next ~30 days to get 1,000 plants into the field on time. Written so anyone on the team can pick it up and run their part.</div>
+    <div class="stamp">Plan date: June 1, 2026 &nbsp;|&nbsp; Clones arrive ~June 15&ndash;18 &nbsp;|&nbsp; Transplant window ~June 24&ndash;26 &nbsp;|&nbsp; Baseline 1,000 plants (scales up or down)</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="note box" style="margin-top:18px">
+    <b class="h">How to read this document</b>
+    Numbers, sizes, and climate settings here are <strong>starting points</strong> drawn from cited industry sources and Athena Ag's protocol &mdash; not final specs. Every one is a rough heuristic for the team to discuss; the named owner of each project is responsible for checking it, dialing it in to our actual site and genetics, and signing off before money is spent. Prices are <strong>rough planning estimates from web research dated June 2026</strong> unless a vendor quote is noted &mdash; treat them as budget-scale, not quotes.
+  </div>
+
+  <div class="toc">
+    <a href="#fit" data-scroll="fit">0 &middot; How the four projects fit together</a>
+    <a href="#timeline" data-scroll="timeline">1 &middot; The timeline (start here)</a>
+    <a href="#field" data-scroll="field">2 &middot; Field plan drawing</a>
+    <a href="#p1" data-scroll="p1">3 &middot; Project 1 — Warehouse &amp; grow tents</a>
+    <a href="#p2" data-scroll="p2">4 &middot; Project 2 — Propagation house</a>
+    <a href="#p3" data-scroll="p3">5 &middot; Project 3 — Irrigation &amp; fertigation</a>
+    <a href="#p4" data-scroll="p4">6 &middot; Project 4 — The 45-gallon pot matrix</a>
+    <a href="#infra" data-scroll="infra">7 &middot; Trellis, tractor access, deer fence, cold-frame</a>
+    <a href="#spray" data-scroll="spray">8 &middot; Spray program &amp; plant health</a>
+    <a href="#genetics" data-scroll="genetics">9 &middot; Genetics selection</a>
+    <a href="#people" data-scroll="people">10 &middot; People, hours &amp; hiring</a>
+    <a href="#security" data-scroll="security">11 &middot; Security, monitoring &amp; data</a>
+    <a href="#budget" data-scroll="budget">12 &middot; Equipment list &amp; budget</a>
+    <a href="#failure" data-scroll="failure">13 &middot; Most likely ways this goes wrong</a>
+    <a href="#decisions" data-scroll="decisions">14 &middot; Open decisions to confirm</a>
+  </div>
+
+  <!-- ============ 0 FIT ============ -->
+  <h2 id="fit"><span class="num">0</span>How the four projects fit together</h2>
+  <p class="lede">The whole season turns on one moment: moving rooted young plants out of small pots and into the field. That is the <strong>transplant</strong>. Everything below exists to make that moment happen on time and without scramble.</p>
+
+  <p>The plants travel through four places, in order:</p>
+  <ol>
+    <li><strong>The warehouse</strong> — small starter plants ("clones") arrive ~June 15&ndash;18 and recover under lights in grow tents for a few days.</li>
+    <li><strong>Up-potting</strong> — they move into 4-inch pots and settle.</li>
+    <li><strong>The propagation house</strong> — a covered hoop tunnel just outside the warehouse where they "harden off," adjusting to outdoor sun and air under shade cloth until their roots fill the 4-inch pot.</li>
+    <li><strong>The field</strong> — once roots show through the bottom of the 4-inch pot, they are transplanted into 45-gallon pots already filled with soil and hooked to water.</li>
+  </ol>
+
+  <div class="gate">
+    <b class="h">The one rule that controls the schedule</b>
+    We transplant when <strong>roots show through the bottom of the 4-inch pot</strong> — the plant decides, not the calendar. The whole field side (irrigation + filled pots) must be 100% finished <em>before</em> that happens, so plants never sit waiting on us. If the field is late, the plants get root-bound and stressed, and the season starts on the back foot.
+  </div>
+
+  <p>The four build projects run <strong>in parallel</strong>, not one after another. Projects 1 and 2 carry the plants <em>through</em> their early life; Projects 3 and 4 prepare the field to <em>receive</em> them. The timeline below shows how they overlap and where they must converge.</p>
+
+  <div class="keyfacts">
+    <div class="fact"><div class="v">1,000</div><div class="l">Plants (baseline)</div></div>
+    <div class="fact"><div class="v">~16</div><div class="l">Rows @ 200 ft</div></div>
+    <div class="fact"><div class="v">~223</div><div class="l">Cu yd of soil</div></div>
+    <div class="fact"><div class="v">~1.2&ndash;1.4</div><div class="l">Acres incl. aisles</div></div>
+    <div class="fact"><div class="v">~30</div><div class="l">Days to ready</div></div>
+  </div>
+
+  <div class="scale box">
+    <b class="h">Scaling the whole plan up or down</b>
+    Every quantity is built on a <strong>per-plant rate</strong>, so any plant count recomputes cleanly. Headline rates: <strong>soil ≈ 0.223 cu yd per plant</strong> · <strong>pots = 1 per plant + ~3% spares</strong> · <strong>drip emitters = 1 per plant</strong> · <strong>rows ≈ 66 plants per 200-ft row</strong> at 5&prime;&times;6&prime; spacing (or ~80 at the tighter 5&prime;&times;5&prime;). For 800 plants multiply by 0.8; for 1,200, by 1.2.
+  </div>
+
+  <!-- ============ 1 TIMELINE ============ -->
+  <h2 id="timeline"><span class="num">1</span>The timeline — start here</h2>
+  <p class="lede">Blowing the timeline is the single most likely way this season goes sideways. So timing comes first, and every project below repeats its own "order by / build / ready by" dates. Read this section before anything else.</p>
+
+  <div class="flag box">
+    <b class="h">The punchline: most procurement risk is in the next 5 business days</b>
+    Tents, the prop-house tunnel, soil, pots, and the irrigation design all have lead times measured in <strong>days to weeks</strong>. If they are not ordered/engaged in the week of <strong>June 1&ndash;7</strong>, they may not arrive in time to build before the plants are ready. <strong>Order-by dates &mdash; not need-by dates &mdash; are what matter now.</strong>
+  </div>
+
+  <div class="gantt">
+    <table class="gtable">
+      <thead>
+        <tr><th>Task &nbsp;/&nbsp; Week</th><th>Jun&nbsp;1&ndash;7</th><th>Jun&nbsp;8&ndash;14</th><th>Jun&nbsp;15&ndash;21</th><th>Jun&nbsp;22&ndash;28</th><th>Jun&nbsp;29&ndash;Jul&nbsp;5</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="lab crit">Order / engage (long-lead)</td><td><span class="bar b-proc"></span></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lab">Site &amp; pad prep, deer fence</td><td><span class="bar b-prep"></span></td><td><span class="bar b-prep"></span></td><td><span class="bar b-prep"></span></td><td></td><td></td></tr>
+        <tr><td class="lab">P1 · Warehouse + tents</td><td><span class="bar b-wh"></span></td><td><span class="bar b-wh"></span></td><td></td><td></td><td></td></tr>
+        <tr><td class="lab">P2 · Prop house</td><td><span class="bar b-prop"></span></td><td><span class="bar b-prop"></span></td><td><span class="bar b-prop"></span></td><td></td><td></td></tr>
+        <tr><td class="lab crit">P3 · Irrigation design</td><td><span class="bar b-irr"></span></td><td><span class="bar b-irr"></span></td><td></td><td></td><td></td></tr>
+        <tr><td class="lab crit">P3 · Irrigation install</td><td></td><td><span class="bar b-irr"></span></td><td><span class="bar b-irr"></span></td><td><span class="bar b-irr"></span></td><td></td></tr>
+        <tr><td class="lab crit">P4 · Soil delivered</td><td></td><td><span class="bar b-soil"></span></td><td><span class="bar b-soil"></span></td><td></td><td></td></tr>
+        <tr><td class="lab crit">P4 · Place + fill pots</td><td></td><td></td><td><span class="bar b-soil"></span></td><td><span class="bar b-soil"></span></td><td></td></tr>
+        <tr><td class="lab">Clones arrive → tents</td><td></td><td></td><td><span class="bar b-plant"></span></td><td></td><td></td></tr>
+        <tr><td class="lab">Up-pot to 4″ · settle</td><td></td><td></td><td><span class="bar b-plant"></span></td><td></td><td></td></tr>
+        <tr><td class="lab">Harden off in prop house</td><td></td><td></td><td><span class="bar b-plant"></span></td><td><span class="bar b-plant"></span></td><td></td></tr>
+        <tr><td class="lab crit">★ TRANSPLANT to field</td><td></td><td></td><td></td><td><span class="bar b-plant"></span></td><td><span class="bar b-plant"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="glegend">
+      <span><span class="sw b-proc"></span>Order / engage</span>
+      <span><span class="sw b-prep"></span>Site prep + fence</span>
+      <span><span class="sw b-wh"></span>P1 Warehouse</span>
+      <span><span class="sw b-prop"></span>P2 Prop house</span>
+      <span><span class="sw b-irr"></span>P3 Irrigation</span>
+      <span><span class="sw b-soil"></span>P4 Pot matrix</span>
+      <span><span class="sw b-plant"></span>Plant journey</span>
+      <span><span class="star">red label</span> = on the critical path</span>
+    </div>
+  </div>
+
+  <h3>The critical path — the chain that cannot slip</h3>
+  <p style="font-family:Verdana,sans-serif;font-size:13.5px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;line-height:1.95">
+    Irrigation <strong>design</strong> (engage now) &rarr; soil <strong>delivered</strong> &rarr; pots <strong>placed &amp; filled</strong> &rarr; drip <strong>run to every pot</strong> &rarr; <strong>field 100% ready</strong> &rarr; <span class="star">★ transplant when roots show</span> (~Jun 24&ndash;26).
+  </p>
+  <p>The plant journey (clones → tents → up-pot → harden off) runs on its own biological clock and largely takes care of itself. The risk is all on the field side. If irrigation design slips in week one, every step behind it slips too — which is why engaging the designer is the most time-sensitive single decision in this document.</p>
+
+  <table>
+    <caption>Order-by / engage-by dates for the long-lead items (the week-one list)</caption>
+    <thead><tr><th>Item</th><th>Why it has lead time</th><th>Order / engage by</th></tr></thead>
+    <tbody>
+      <tr><td>Irrigation design</td><td>Design must finish before parts can be ordered and laid</td><td><strong>This week (Jun 2&ndash;6)</strong></td></tr>
+      <tr><td>Soil (bulk)</td><td>Blenders/haulers schedule out; 12&ndash;15 truckloads to coordinate</td><td><strong>This week</strong></td></tr>
+      <tr><td>45-gal pots (1,030)</td><td>Volume order may backorder or ship freight</td><td><strong>This week</strong></td></tr>
+      <tr><td>Grow tents + LED + climate kit</td><td>Must arrive and be built before clones (~Jun 15)</td><td><strong>This week</strong></td></tr>
+      <tr><td>Prop-house tunnel + shade cloth</td><td>Must be standing before plants leave warehouse (~Jun 21)</td><td>By ~Jun 6</td></tr>
+      <tr><td>Irrigation parts</td><td>Ordered right after design lands</td><td>By ~Jun 9</td></tr>
+      <tr><td>Deer fence + trellis materials</td><td>Perimeter and trellis go up before/with transplant</td><td>By ~Jun 9</td></tr>
+      <tr><td>Tractor sprayer</td><td>Needed for first preventative spray after transplant</td><td>By ~Jun 20</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ 2 FIELD DRAWING ============ -->
+  <h2 id="field"><span class="num">2</span>Field plan drawing</h2>
+  <p class="lede">A top-down schematic of the field: rows, plant pairs, the irrigation backbone, water and pump location, and the deer-fence perimeter. This is a working sketch to align on layout — not a survey.</p>
+
+  <div class="flag box">
+    <b class="h">Dimensions are placeholders — to be replaced from the real site</b>
+    The proportions below are illustrative. Exact field size and shape will be worked out from a marked-up site map (the garden footprint). Note the available area may be <strong>wider than older aerial images show</strong>, since more trees have since been cleared. Once real measurements are in, this drawing gets redrawn to scale and the row count / fence length update with it.
+  </div>
+
+  <div class="svgwrap">
+    <svg viewBox="0 0 980 720" xmlns="http://www.w3.org/2000/svg" width="100%" role="img" aria-label="Schematic top-down field plan">
+      <defs>
+        <pattern id="pairs" width="46" height="22" patternUnits="userSpaceOnUse">
+          <circle cx="15" cy="11" r="3.3" fill="#2f5d3a"/>
+          <circle cx="28" cy="11" r="3.3" fill="#2f5d3a"/>
+        </pattern>
+      </defs>
+
+      <!-- deer fence perimeter -->
+      <rect x="24" y="40" width="932" height="648" rx="10" fill="none" stroke="#a8421f" stroke-width="2.5" stroke-dasharray="9 6"/>
+      <rect x="30" y="30" width="330" height="20" fill="#f6f4ec"/>
+      <text x="38" y="45" font-family="Verdana" font-size="12" fill="#a8421f" font-weight="bold">8&prime; deer fence &mdash; perimeter ≈ 1,000 LF</text>
+
+      <!-- north arrow -->
+      <g transform="translate(922,92)">
+        <line x1="0" y1="22" x2="0" y2="-6" stroke="#1b1c18" stroke-width="2"/>
+        <path d="M0,-12 L5,2 L0,-2 L-5,2 Z" fill="#1b1c18"/>
+        <text x="0" y="36" font-family="Verdana" font-size="11" fill="#1b1c18" text-anchor="middle" font-weight="bold">N</text>
+      </g>
+
+      <!-- water + pump cluster -->
+      <rect x="48" y="70" width="96" height="46" rx="6" fill="#23506b"/>
+      <text x="96" y="90" font-family="Verdana" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">10,000 gal</text>
+      <text x="96" y="104" font-family="Verdana" font-size="10" fill="#cfe6f2" text-anchor="middle">water store</text>
+      <rect x="152" y="70" width="150" height="46" rx="6" fill="#5b3fa6"/>
+      <text x="227" y="88" font-family="Verdana" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="bold">pump · filter</text>
+      <text x="227" y="103" font-family="Verdana" font-size="10.5" fill="#e7defb" text-anchor="middle">· fertigation skid</text>
+
+      <!-- staging cluster (warehouse + prop) -->
+      <rect x="600" y="64" width="320" height="58" rx="7" fill="#fffdf7" stroke="#d9d4c4"/>
+      <rect x="610" y="74" width="140" height="38" rx="5" fill="#e2edf3" stroke="#b9d2df"/>
+      <text x="680" y="90" font-family="Verdana" font-size="10.5" fill="#16384c" text-anchor="middle" font-weight="bold">Warehouse</text>
+      <text x="680" y="103" font-family="Verdana" font-size="9.5" fill="#16384c" text-anchor="middle">grow tents</text>
+      <rect x="762" y="74" width="148" height="38" rx="5" fill="#e7efe4" stroke="#bcd3b6"/>
+      <text x="836" y="90" font-family="Verdana" font-size="10.5" fill="#1d3a24" text-anchor="middle" font-weight="bold">Prop house</text>
+      <text x="836" y="103" font-family="Verdana" font-size="9.5" fill="#1d3a24" text-anchor="middle">hoop + tables</text>
+      <text x="760" y="135" font-family="Verdana" font-size="9.5" fill="#4a4d44" text-anchor="middle" font-style="italic">location vs. field: TBD</text>
+
+      <!-- main line down the left -->
+      <line x1="150" y1="116" x2="150" y2="648" stroke="#5b3fa6" stroke-width="4"/>
+      <text x="138" y="380" font-family="Verdana" font-size="11" fill="#5b3fa6" text-anchor="middle" font-weight="bold" transform="rotate(-90 138 380)">main line (pressurized + fertigation)</text>
+
+      <!-- 16 rows: trellis bars filled with plant-pair pattern; manifold dot at each head -->
+      <!-- generated block -->
+      <g font-family="Verdana" font-size="9">
+        <!-- row template repeated; y from 150 step 31 -->
+        <!-- 1 -->
+        <circle cx="150" cy="160" r="4" fill="#5b3fa6"/><rect x="160" y="150" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="191" r="4" fill="#5b3fa6"/><rect x="160" y="181" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="222" r="4" fill="#5b3fa6"/><rect x="160" y="212" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="253" r="4" fill="#5b3fa6"/><rect x="160" y="243" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="284" r="4" fill="#5b3fa6"/><rect x="160" y="274" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="315" r="4" fill="#5b3fa6"/><rect x="160" y="305" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="346" r="4" fill="#5b3fa6"/><rect x="160" y="336" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="377" r="4" fill="#5b3fa6"/><rect x="160" y="367" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="408" r="4" fill="#5b3fa6"/><rect x="160" y="398" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="439" r="4" fill="#5b3fa6"/><rect x="160" y="429" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="470" r="4" fill="#5b3fa6"/><rect x="160" y="460" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="501" r="4" fill="#5b3fa6"/><rect x="160" y="491" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="532" r="4" fill="#5b3fa6"/><rect x="160" y="522" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="563" r="4" fill="#5b3fa6"/><rect x="160" y="553" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="594" r="4" fill="#5b3fa6"/><rect x="160" y="584" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+        <circle cx="150" cy="625" r="4" fill="#5b3fa6"/><rect x="160" y="615" width="740" height="20" rx="3" fill="url(#pairs)" stroke="#bcd3b6"/>
+      </g>
+
+      <!-- tractor aisle callout -->
+      <line x1="500" y1="170" x2="500" y2="181" stroke="#8a8a78" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <text x="506" y="178" font-family="Verdana" font-size="10" fill="#6b6b58">&#8597; tractor aisle ~6&prime; between every row</text>
+
+      <!-- one row annotated -->
+      <text x="540" y="146" font-family="Verdana" font-size="10" fill="#2f5d3a" text-anchor="middle">each bar = 10&prime; trellis · 2 plants across · pairs every ~5&ndash;6&prime; (●● = a pair)</text>
+
+      <!-- headland note -->
+      <text x="530" y="660" font-family="Verdana" font-size="10" fill="#4a4d44" text-anchor="middle">rows run ~200&prime; long · leave ~15&ndash;20&prime; headland at each end for the tractor to turn</text>
+
+      <!-- scale caption -->
+      <text x="40" y="680" font-family="Verdana" font-size="10.5" fill="#a8421f" font-weight="bold">SCHEMATIC — not to scale. Field ≈ 250&prime; × 240&prime; (~1.2&ndash;1.4 acres incl. aisles), to be confirmed from site map.</text>
+    </svg>
+  </div>
+  <p class="footnote">Plant pairs are shown representatively, not counted one-for-one. Manifold dots (violet) sit at each row head where the main line feeds that row's drip sub-line.</p>
+
+  <!-- ============ 3 P1 WAREHOUSE ============ -->
+  <h2 id="p1"><span class="num">3</span>Project 1 — Warehouse &amp; grow tents</h2>
+  <p class="lede">Turn the existing dirty warehouse into a clean, climate-controlled room where clones recover under lights for their first days, and again briefly after up-potting.</p>
+  <div class="owners">
+    <span class="owner lead">Likely lead: Max</span>
+    <span class="owner">Support: Marco</span>
+  </div>
+  <div class="pendnote">Owners likely but pending team discussion.</div>
+
+  <div class="tstrip">
+    <div class="chip order"><b>Order by</b>This week (Jun 1&ndash;7) — tents, LED, climate kit</div>
+    <div class="chip build"><b>Build</b>Jun 1&ndash;14 — clean, assemble, light, climate</div>
+    <div class="chip ready"><b>Ready by</b>~Jun 14, before clones arrive</div>
+  </div>
+
+  <h3>Build steps, in order</h3>
+  <ol>
+    <li><strong>Deep clean.</strong> Clear, sweep, wipe every surface, finish with a horticultural sanitizer on floors and walls. Young cannabis is highly vulnerable to mold and pests; a dirty room is the most common early killer.</li>
+    <li><strong>Set up grow tent(s)</strong> — reflective, sealed, controllable space inside the larger warehouse.</li>
+    <li><strong>Hang LED grow lights</strong> inside each tent.</li>
+    <li><strong>Add climate &amp; air:</strong> humidifier, carbon filter + inline fan, oscillating fans, and a temp/humidity controller you can read and (ideally) monitor remotely.</li>
+    <li><strong>Stabilize and test</strong> the room for a day before plants arrive.</li>
+  </ol>
+
+  <h3>Climate targets — starting points to dial in</h3>
+  <div class="heur box">
+    <b class="h">These are heuristics, not gospel</b>
+    The ranges below come from cultivation references and Athena Ag's published veg-stage protocol. They are a <strong>starting point</strong>. The grow lead must finalize them against our actual genetics, tent, and equipment, and adjust as the plants respond. Note: under LED, leaf surface runs ~2&ndash;5&deg;F cooler than the air, so true VPD is a touch lower than an air reading suggests.
+  </div>
+  <table>
+    <caption>VPD = a combined temp + humidity comfort target; PPFD = light intensity at the canopy</caption>
+    <thead><tr><th>Stage</th><th class="n">Temp</th><th class="n">Humidity</th><th class="n">VPD</th><th class="n">PPFD</th><th>Light</th></tr></thead>
+    <tbody>
+      <tr><td>Clone recovery (first days)</td><td class="n">70&ndash;78&deg;F</td><td class="n">70&ndash;85%</td><td class="n">0.6&ndash;0.9 kPa</td><td class="n">100&ndash;250, ramp gently</td><td>18h on / 6h off</td></tr>
+      <tr><td>Early veg (after up-pot)</td><td class="n">72&ndash;82&deg;F</td><td class="n">58&ndash;75%</td><td class="n">0.8&ndash;1.0 kPa</td><td class="n">300&ndash;600</td><td>18/6, blue-dominant</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote"><span class="src">Sources (Jun 2026): Athena Ag veg-stage protocol (72&ndash;82&deg;F, RH 58&ndash;75%, VPD 0.8&ndash;1.0, PPFD 300&ndash;600, LED 18&ndash;24″ off canopy); Blimburn / Pulse / MaryJane.farm for clone-stage ranges; Ed Rosenthal / Koolfog on LED leaf-temp offset. Treat as heuristics.</span></p>
+
+  <h3>How many tents, and how big the kit?</h3>
+  <div class="flag box">
+    <b class="h">Tent count is gated on the trays the clones ship in</b>
+    Clones are expected to arrive <strong>25 cuttings per tray</strong>, so ~1,000 plants ≈ <strong>~40 trays</strong>. Those trays need only short-term recovery space, packed fairly tight, before up-potting. <strong>Max confirms the exact tent count against the tray footprint before ordering.</strong> Equipment (lights, humidifier, fans, filter) must then be <strong>sized to the final tent count and tent volume</strong> — the quantities below are a starting frame, not a final order.
+  </div>
+
+  <h3>Equipment &amp; ballpark cost</h3>
+  <table>
+    <caption>Rough planning estimates, Jun 2026. Confirm against final tent count + actual quotes.</caption>
+    <thead><tr><th>Item</th><th>Why</th><th class="n">Qty (1,000 plants)</th><th class="n">Ballpark</th></tr></thead>
+    <tbody>
+      <tr><td>Grow tent, 10&prime;&times;20&prime;</td><td>Sealed, reflective recovery space</td><td class="n">1&ndash;2 (Max confirms)</td><td class="n">$2,000&ndash;2,500 ea</td></tr>
+      <tr><td>LED grow light (veg/clone grade)</td><td>Low-to-moderate light for young plants</td><td class="n">per tent coverage</td><td class="n">$400&ndash;1,500</td></tr>
+      <tr><td>Commercial humidifier</td><td>Clones need high humidity</td><td class="n">1&ndash;2</td><td class="n">$150&ndash;600</td></tr>
+      <tr><td>Carbon filter + inline fan</td><td>Air exchange + filtration; sized to tent CFM</td><td class="n">1 per tent</td><td class="n">$150&ndash;400</td></tr>
+      <tr><td>Oscillating fans</td><td>Airflow, stem strength, mold prevention</td><td class="n">2&ndash;4</td><td class="n">$100&ndash;300</td></tr>
+      <tr><td>Temp/humidity controller (remote-capable)</td><td>Hold + monitor conditions; alerts</td><td class="n">1 per tent</td><td class="n">$80&ndash;250</td></tr>
+      <tr><td>Temp control (portable AC / heater / mini-split)</td><td>Hold a stable range</td><td class="n">as needed</td><td class="n">$300&ndash;2,000</td></tr>
+      <tr><td>Cleaning + sanitizer supplies</td><td>Deep clean before plants</td><td class="n">bulk</td><td class="n">$100&ndash;300</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">Project 1 subtotal (rough)</td><td class="n">~$3,300&ndash;11,000</td></tr></tfoot>
+  </table>
+  <p class="footnote"><span class="src">Tent/LED prices: LED Grow Lights Depot, HTG Supply, Growers House (Jun 2026). Other items: commodity ranges, rough estimate — verify with quotes. Scales weakly with plant count; driven mostly by tent count.</span></p>
+
+  <p><strong>Effort:</strong> roughly <strong>40&ndash;70 person-hours</strong>, ~2 people, spread across week one (clean is the time sink; assembly and climate are fast). <em>Estimate — refine with Max.</em></p>
+
+  <!-- ============ 4 P2 PROP HOUSE ============ -->
+  <h2 id="p2"><span class="num">4</span>Project 2 — Propagation house</h2>
+  <p class="lede">A simple covered hoop tunnel right outside the warehouse where up-potted plants harden off — adjusting to real sun, wind, and outdoor air — before the field.</p>
+  <div class="owners">
+    <span class="owner lead">Likely lead: Max</span>
+    <span class="owner">Support: Marco</span>
+    <span class="owner">Structure/design input: Alec</span>
+  </div>
+  <div class="pendnote">Owners likely but pending team discussion.</div>
+
+  <div class="tstrip">
+    <div class="chip order"><b>Order by</b>~Jun 6 — tunnel kit + shade cloth</div>
+    <div class="chip build"><b>Build</b>Jun 8&ndash;18 — tunnel, tables, shade, fans, drip</div>
+    <div class="chip ready"><b>Ready by</b>~Jun 20, before plants leave warehouse</div>
+  </div>
+
+  <h3>What it is</h3>
+  <p>A <strong>hoop / caterpillar tunnel</strong> (curved steel bows, covered) sized to hold ~1,000 plants in 4-inch pots, with <strong>shade cloth over the top</strong> to cut harsh midday sun. Not a heated glass greenhouse — a fast, affordable shelter.</p>
+
+  <div class="flag box">
+    <b class="h">Pots must sit on tables — the ground is asphalt</b>
+    Asphalt gets dangerously hot in sun and will cook pots from below. Build simple tables (sawhorses + plywood/mesh, or pallet racking) to lift pots off the surface and let air move underneath. Non-negotiable; it is on the list.
+  </div>
+
+  <h3>How big? — sized generously on purpose</h3>
+  <p>1,000 four-inch pots packed edge-to-edge cover only ~110 sq ft, but pots need walking room, table gaps, and airflow. Rather than size it tight, plan for breathing room:</p>
+  <table>
+    <thead><tr><th>Element</th><th class="n">Recommended range</th><th>Reasoning</th></tr></thead>
+    <tbody>
+      <tr><td>Table surface for pots</td><td class="n">~250&ndash;400 sq ft</td><td>~2&ndash;3.5&times; the packed pot footprint, for spacing + airflow</td></tr>
+      <tr><td>Tunnel footprint</td><td class="n">~16&prime;&times;40&prime; to 20&prime;&times;50&prime; (≈640&ndash;1,000 sq ft)</td><td>Leaves aisle + working room; err larger — extra space is cheap insurance against crowding and mold</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Erring large here is deliberate: crowding young plants is a disease risk, and a bigger tunnel costs only a little more at ~$2&ndash;5/sq ft. The owner finalizes the size against the actual table build and site.</p>
+
+  <h3>Equipment &amp; ballpark cost</h3>
+  <table>
+    <caption>Rough planning estimates, Jun 2026.</caption>
+    <thead><tr><th>Item</th><th>Why</th><th class="n">For 1,000 plants</th><th class="n">Ballpark</th></tr></thead>
+    <tbody>
+      <tr><td>Hoop / caterpillar tunnel kit (incl. 6-mil cover)</td><td>The structure</td><td class="n">~640&ndash;1,000 sq ft</td><td class="n">$1,300&ndash;5,000</td></tr>
+      <tr><td>Shade cloth (roof + ends)</td><td>Prevents sun scorch on young plants</td><td class="n">sized to structure</td><td class="n">$150&ndash;600</td></tr>
+      <tr><td>Tables (sawhorse + ply/mesh or racking)</td><td>Keep pots off hot asphalt</td><td class="n">~250&ndash;400 sq ft surface</td><td class="n">$300&ndash;1,500</td></tr>
+      <tr><td>Basic drip lines + timer</td><td>Water trays without standing there</td><td class="n">1 small zone</td><td class="n">$150&ndash;500</td></tr>
+      <tr><td>Fertilizer-mixing setup (batch tank + measuring)</td><td>Mix nutrients into the water</td><td class="n">1</td><td class="n">$100&ndash;400</td></tr>
+      <tr><td>Fans</td><td>Airflow, stem strength, mold prevention</td><td class="n">2&ndash;4</td><td class="n">$100&ndash;400</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">Project 2 subtotal (rough)</td><td class="n">~$2,100&ndash;8,400</td></tr></tfoot>
+  </table>
+  <p class="footnote"><span class="src">Tunnel pricing: Farmers Friend ($1.77&ndash;2.02/sq ft kits), Bootstrap Farmer (&lt;$5/sq ft built; 20&prime;&times;100&prime; ~$1,600 kit), Jun 2026. Tables can be near-free from scrap lumber/pallets. Mostly fixed cost; does not scale much with plant count.</span></p>
+
+  <p><strong>Effort:</strong> roughly <strong>50&ndash;90 person-hours</strong>, ~3&ndash;4 people, ~3&ndash;5 days (tunnel raise + tables are the bulk). <em>Estimate — refine with the leads.</em></p>
+
+  <!-- ============ 5 P3 IRRIGATION ============ -->
+  <h2 id="p3"><span class="num">5</span>Project 3 — Irrigation &amp; fertigation system</h2>
+  <p class="lede">Get pressurized water — with nutrients mixed in ("fertigation") — from the 10,000-gallon store out to every one of the 1,000 pots, evenly and on a timer.</p>
+  <div class="owners">
+    <span class="owner lead">Likely lead: Alec</span>
+    <span class="owner">Design + parts: evaluate Soilscape Solutions (Sam)</span>
+  </div>
+  <div class="pendnote">Alec raised and is the natural lead for irrigation; owner confirmation pending team discussion.</div>
+
+  <div class="tstrip">
+    <div class="chip order"><b>Engage / order by</b>Design this week; parts by ~Jun 9</div>
+    <div class="chip build"><b>Install</b>Jun 8&ndash;22 — main, manifolds, sub-lines, emitters</div>
+    <div class="chip ready"><b>Ready by</b>Before transplant — field watered &amp; tested</div>
+  </div>
+
+  <h3>What the system is (the "Pump &amp; Delivery System")</h3>
+  <p>This is more than a tank. It is a <strong>Pump &amp; Delivery System</strong> sized to feed 1,000 drip emitters evenly. Its core parts:</p>
+  <ol>
+    <li><strong>Pump</strong> — pulls water from the 10,000-gallon store and pressurizes it to a steady, regulated level.</li>
+    <li><strong>Filtration</strong> — protects the tiny drip emitters from clogging.</li>
+    <li><strong>Pressure regulation</strong> — drip irrigation runs at <em>low, steady</em> pressure; this holds it there.</li>
+    <li><strong>Nutrient injector</strong> — meters liquid nutrients into the water line (the "fertigation" part).</li>
+    <li><strong>Controller / timer</strong> — runs watering on a schedule, unattended.</li>
+    <li><strong>Optional captive-air pressure tank</strong> — can be added to stop the pump short-cycling and give steady hose-station pressure. Whether it earns its place is the designer's call; it is not required.</li>
+  </ol>
+
+  <h3>How the water reaches the plants</h3>
+  <p>Pump &amp; delivery skid &rarr; <strong>main line</strong> out to the field &rarr; a <strong>manifold</strong> (a junction) at the head of each row &rarr; a <strong>sub-line</strong> down each row &rarr; <strong>one drip emitter into each pot</strong>. About 16 manifolds, ~3,200 ft of sub-line, and 1,000+ emitters.</p>
+
+  <div class="gate">
+    <b class="h">Strong recommendation: bring in an irrigation designer</b>
+    Running a system and <em>designing</em> one are different skills. Sizing emitter flow, pipe diameter, manifold layout, and pump head against 1,000 pots — possibly on a slope — is specialized. Get it wrong and water is uneven, which means plants mature unevenly and the "transplant when roots show" rule breaks down across the field. <strong>Soilscape Solutions (Sam)</strong> is a strong candidate: a designer who can also supply the parts, which often means the design work comes free or cheap when the parts are bought through them. A few hundred dollars of design de-risks the one system that simply has to run flawlessly. Worth a conversation this week. Trimming this to save money is a false economy.
+  </div>
+
+  <h3>Equipment &amp; ballpark cost</h3>
+  <p>Parts <strong>counts</strong> scale cleanly (1 emitter per plant, 1 manifold per row). Parts <strong>sizing</strong> (pump, pipe diameter, regulator) comes from the design. Treat the table as the shopping frame; the designer fills exact specs and firm prices.</p>
+  <table>
+    <caption>Rough planning estimates, Jun 2026 — design-dependent. Sam's (or Alec's) quote governs.</caption>
+    <thead><tr><th>Component</th><th>What it does</th><th class="n">For 1,000 plants</th><th class="n">Ballpark</th></tr></thead>
+    <tbody>
+      <tr><td>Pump + filtration + pressure regulation</td><td>Pressurize + protect emitters + hold steady pressure</td><td class="n">1 set, sized to design</td><td class="n">$800&ndash;3,500</td></tr>
+      <tr><td>Nutrient injector (fertigation)</td><td>Mix nutrients into the water</td><td class="n">1</td><td class="n">$300&ndash;1,500</td></tr>
+      <tr><td>Controller / timer</td><td>Unattended scheduled watering</td><td class="n">1</td><td class="n">included / $100&ndash;500</td></tr>
+      <tr><td>Main line + ~16 manifolds + sub-line (poly) + fittings</td><td>Carry + split water to rows</td><td class="n">~3,200 ft sub-line</td><td class="n">$1,000&ndash;4,000</td></tr>
+      <tr><td>Drip emitters + stakes</td><td>Deliver water to each pot</td><td class="n">1,000+ (+ spares)</td><td class="n">$300&ndash;1,000</td></tr>
+      <tr><td>Captive-air tank (optional)</td><td>Anti short-cycle / hose pressure</td><td class="n">0&ndash;1, designer's call</td><td class="n">$0&ndash;800</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">Project 3 subtotal (rough)</td><td class="n">~$2,500&ndash;11,000</td></tr></tfoot>
+  </table>
+  <p class="footnote"><span class="src">Component ranges are commodity/market estimates, Jun 2026; the design quote replaces them. Sub-line and emitter counts scale linearly with plant count.</span></p>
+
+  <p><strong>Effort:</strong> design is separate (designer + Alec). Install across 16 rows is the labor item: roughly <strong>80&ndash;160 person-hours</strong>, ~3&ndash;4 people over several days, overlapping pot placement. <em>Estimate — refine after design.</em></p>
+
+  <!-- ============ 6 P4 POT MATRIX ============ -->
+  <h2 id="p4"><span class="num">6</span>Project 4 — The 45-gallon pot matrix</h2>
+  <p class="lede">Place ~1,000 forty-five-gallon fabric pots in the field in the right pattern, fill them with soil, cap with mulch, and have them ready for the drip lines.</p>
+  <div class="owners">
+    <span class="owner lead">Likely crew lead: Max</span>
+    <span class="owner">Support: Marco</span>
+    <span class="owner">Tractor during fill: Alec</span>
+    <span class="owner">All hands + surge labor</span>
+  </div>
+  <div class="pendnote">Owners likely but pending team discussion.</div>
+
+  <div class="tstrip">
+    <div class="chip order"><b>Order by</b>This week — soil + 1,030 pots</div>
+    <div class="chip build"><b>Build</b>Jun 15&ndash;26 — place, fill, mulch, drip</div>
+    <div class="chip ready"><b>Ready by</b>Before roots show (~Jun 24)</div>
+  </div>
+
+  <h3>The layout — what we're actually trying to achieve</h3>
+  <p>The goal is roughly <strong>5&prime;&times;5&prime; to 5&prime;&times;6&prime; of space per plant</strong> — enough that mature plants in 45-gallon pots aren't crowded, which protects airflow and cuts mold risk. We reach that spacing logically with <strong>10-foot-wide trellis rows holding two plants across the width</strong> (each plant gets ~5&prime; of the 10&prime;), and <strong>pairs repeating every ~5&ndash;6&prime; down the length of the row</strong>. Putting two plants across each row means we need about <strong>half as many rows</strong> as planting single-file — less trellis, less drip line, less walking.</p>
+  <table>
+    <thead><tr><th>Measure</th><th class="n">Value</th><th>Plain meaning</th></tr></thead>
+    <tbody>
+      <tr><td>Trellis / row width</td><td class="n">10 ft</td><td>2 plants across, ~5&prime; apart</td></tr>
+      <tr><td>Spacing between pairs (down-row)</td><td class="n">~5&ndash;6 ft</td><td>Gives 5&prime;&times;5&prime; to 5&prime;&times;6&prime; per plant</td></tr>
+      <tr><td>Plants per 200-ft row</td><td class="n">~66 (at 6&prime;) to ~80 (at 5&prime;)</td><td>Pairs &times; 2</td></tr>
+      <tr><td>Rows for 1,000 plants</td><td class="n">~13&ndash;16</td><td>Baseline 16 at the airier 5&prime;&times;6&prime;</td></tr>
+      <tr><td>Tractor aisle between rows</td><td class="n">~6 ft</td><td>So a tractor + sprayer can drive every inter-row</td></tr>
+    </tbody>
+  </table>
+  <div class="note box">
+    <b class="h">Confirm the down-row spacing with Brett (Athena Ag advisor)</b>
+    This plan uses ~6&prime; between pairs as the airier baseline. Tightening to ~5&prime; fits more plants in fewer rows but reduces airflow. Confirm the target with Brett and against the real field width before the pot order is finalized — it sets the row count and the deer-fence length.
+  </div>
+
+  <h3>The soil — how much</h3>
+  <p>A 45-gallon fabric pot holds about <strong>6 cubic feet</strong> of soil (27″ across × 18″ tall). Filling 1,000:</p>
+  <div class="keyfacts">
+    <div class="fact"><div class="v">~6.0</div><div class="l">Cu ft per pot</div></div>
+    <div class="fact"><div class="v">~6,000</div><div class="l">Total cu ft</div></div>
+    <div class="fact"><div class="v">~223</div><div class="l">Cubic yards</div></div>
+    <div class="fact"><div class="v">~12&ndash;15</div><div class="l">Truckloads</div></div>
+  </div>
+  <div class="flag box">
+    <b class="h">Confirm the pot's true fill volume before ordering soil</b>
+    "45 gallon" is a trade size and actual volume varies by ~10% between makers. Filling to ~90% rather than the brim also changes the total. Confirm the chosen pot's stated volume; at 5.5 cu ft instead of 6.0, the soil order drops to ~204 cu yd. We've planned the high side (~223 cu yd) so we don't run short.
+  </div>
+
+  <h3>The fill method — Brett's proven system</h3>
+  <p>This is the exact workflow Brett used to fill 45-gallon pots at volume. The key to speed is that <strong>the skid steer never stops moving</strong>.</p>
+  <table>
+    <thead><tr><th class="n">Step</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>Dump close.</strong> Soil truck dumps 15&ndash;20 yards at a time directly in the field, as near the crew as possible, to cut walking/driving time.</td></tr>
+      <tr><td class="n">2</td><td><strong>Shuttle continuously.</strong> A car-hauler trailer is hooked to the farm truck; a skid steer runs non-stop between the soil pile and the trailer, keeping it loaded.</td></tr>
+      <tr><td class="n">3</td><td><strong>Fill off the trailer.</strong> Truck + trailer inch forward down the row while the crew fills pots straight off the trailer with shovels.</td></tr>
+      <tr><td class="n">4</td><td><strong>Mulch.</strong> Cap each filled pot with mulch so the soil doesn't bake and dry.</td></tr>
+      <tr><td class="n">5</td><td><strong>Drip.</strong> Project 3's emitters get run to each pot.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Crew &amp; time</h3>
+  <p>Brett's experienced crew of <strong>8&ndash;9 filled 1,500&ndash;2,000 pots per day</strong>, split as: 1 truck driver, 1 skid-steer driver, 2 setting pots in place, 5 shoveling.</p>
+  <div class="flag box">
+    <b class="h">Plan conservatively, and treat this as all-hands</b>
+    Brett described his best crew on a familiar site. Our crew is doing this for the first time, on a site being prepped at the same time, possibly in heat. <strong>Plan at 800&ndash;1,000 pots/day, not 1,500.</strong> This is the heaviest physical push of the build: it should be <strong>all hands on deck</strong>, plus vetted surge labor (see hiring standards). An extra crew-day is cheap; fill bleeding into the transplant window is not.
+  </div>
+  <table>
+    <thead><tr><th>Plant count</th><th class="n">At ~800/day</th><th class="n">Budget (with margin)</th></tr></thead>
+    <tbody>
+      <tr><td>800</td><td class="n">1 day</td><td class="n">2 days</td></tr>
+      <tr><td>1,000 (baseline)</td><td class="n">~1.25 days</td><td class="n">2 days</td></tr>
+      <tr><td>1,200</td><td class="n">1.5 days</td><td class="n">3 days</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Equipment &amp; ballpark cost</h3>
+  <table>
+    <caption>Rough planning estimates, Jun 2026. Soil is the dominant line and the biggest variable.</caption>
+    <thead><tr><th>Item</th><th class="n">For 1,000 plants</th><th class="n">Per-plant rate</th><th class="n">Ballpark</th></tr></thead>
+    <tbody>
+      <tr><td>45-gal woven fabric pots</td><td class="n">1,030 (+3% spare)</td><td class="n">1.03</td><td class="n">$4,600&ndash;8,200</td></tr>
+      <tr><td>Soil — bulk organic blend (by the yard)</td><td class="n">~223 cu yd</td><td class="n">0.223 cu yd</td><td class="n">$13,400&ndash;33,500</td></tr>
+      <tr><td>Mulch (cap layer)</td><td class="n">all pots, depth TBD</td><td class="n">per pot top</td><td class="n">$200&ndash;1,000</td></tr>
+      <tr><td>Skid steer (rental if not owned)</td><td class="n">1, ~2 days</td><td class="n">&mdash;</td><td class="n">$0&ndash;1,000</td></tr>
+      <tr><td>Car-hauler trailer + farm truck</td><td class="n">1 each</td><td class="n">&mdash;</td><td class="n">owned / $0&ndash;300</td></tr>
+      <tr><td>Shovels + hand tools</td><td class="n">5&ndash;6</td><td class="n">&mdash;</td><td class="n">$100&ndash;300</td></tr>
+      <tr><td>Surge labor (beyond owners)</td><td class="n">~4&ndash;5 hands &times; 2 days</td><td class="n">&mdash;</td><td class="n">$1,300&ndash;3,000</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">Project 4 subtotal (rough) — soil-driven</td><td class="n">~$19,600&ndash;47,300</td></tr></tfoot>
+  </table>
+  <div class="flag box">
+    <b class="h">Soil grade is the single biggest swing in the whole budget</b>
+    A bulk organic blend by the yard runs roughly <strong>$50&ndash;150/cu yd delivered</strong>; a premium bagged/living-soil mix can hit <strong>~$218/cu yd</strong> — which would roughly double the soil line to ~$48k. At 223 yards, the sourcing decision is worth more than $20,000. Get quotes from local blenders (e.g., Hudson Soil Co. and other Hudson Valley / Orange County suppliers) and confirm whether the blend is container-ready or needs amending for cannabis. <span class="src">[Pricing: Rock Pile, Got Mulch, Soil3, Home Depot bagged ceiling, Jun 2026 — estimate, get quotes.]</span>
+  </div>
+  <p class="footnote"><span class="src">Pots: 247Garden / HTG / GrowGeneration bulk pricing ($4.28&ndash;6.48+ ea), Jun 2026. Pots and soil scale linearly with plant count; equipment is fixed.</span></p>
+
+  <p><strong>Effort:</strong> the fill itself is ~<strong>140&ndash;160 person-hours</strong> (8&ndash;9 crew × ~2 days), plus pot placement and drip hookup. The all-hands day(s). <em>Estimate — refine with Max + Brett's guidance.</em></p>
+
+  <!-- ============ 7 INFRA ============ -->
+  <h2 id="infra"><span class="num">7</span>Trellis, tractor access, deer fence &amp; cold-frame option</h2>
+  <p class="lede">The field infrastructure around the pots: what holds the plants up, how the tractor gets through, what keeps deer out, and whether to plan for late-season rain protection.</p>
+  <div class="owners">
+    <span class="owner">Likely: Max + Marco (trellis/fence), Alec (tractor, layout)</span>
+  </div>
+  <div class="pendnote">Owners likely but pending team discussion.</div>
+
+  <h3>Trellis &amp; tractor access</h3>
+  <p>Each 10-foot-wide row is trellised to support the plants. Critically, we want a <strong>~6-foot aisle between every row</strong> so a tractor with a mounted implement can drive each inter-row — for <strong>spraying</strong> (a tractor-mounted sprayer), mowing, and general work. Leave <strong>~15&ndash;20 ft of headland</strong> at each row end for the tractor to turn. Aisle width should be confirmed against the actual tractor + implement before rows are pegged out.</p>
+
+  <h3>Tall posts &amp; the cold-frame question</h3>
+  <p>An option worth weighing now: driving in <strong>tall posts (~12 ft)</strong> along the rows that serve double duty — trellis support <em>and</em> a frame to pull plastic over the plants late in flower if heavy rain threatens. Covered ("cold-frame") outdoor plants often finish cleaner, because keeping rain off dense late-season flower is one of the best defenses against bud rot.</p>
+  <div class="heur box">
+    <b class="h">Honest constraint on "12-foot posts"</b>
+    Standard steel T-posts top out around 8&ndash;10 ft and aren't built to anchor plastic against wind. A true 12-ft cover frame means heavier driven posts (e.g., ground-driven pipe or greenhouse-grade posts) with cross-bracing — more cost and labor than a plain trellis. The team should decide between three options below; the owner finalizes.
+  </div>
+  <table>
+    <thead><tr><th>Option</th><th>What it gives</th><th>Trade-off</th><th class="n">Rough cost</th></tr></thead>
+    <tbody>
+      <tr><td>Plain trellis only</td><td>Plant support</td><td>No rain protection late season</td><td class="n">$2,000&ndash;6,000</td></tr>
+      <tr><td>Tall posts now, plastic only if needed</td><td>Support + the <em>option</em> to cover</td><td>Heavier posts up front; plastic bought later</td><td class="n">+$1,000&ndash;3,000 over plain</td></tr>
+      <tr><td>Full cold-frame cover</td><td>Support + rain protection + cleaner finish</td><td>Most cost/labor; wind management</td><td class="n">+$1,000&ndash;5,000 over plain</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Costs rough, Jun 2026 — confirm with a structures quote. The middle option (tall posts now, plastic on standby) is often the sensible hedge: low extra cost, keeps the door open.</p>
+
+  <h3>Deer fence</h3>
+  <p>A perimeter <strong>deer fence (~8 ft tall, ~1,000 linear feet)</strong> protects the entire crop — deer can destroy an outdoor planting fast and jump short fences. Put a temporary hot-wire or mesh up before transplant if the permanent fence isn't finished.</p>
+  <table>
+    <caption>Rough planning estimates, Jun 2026.</caption>
+    <thead><tr><th>Approach</th><th class="n">Per foot</th><th class="n">~1,000 LF</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>DIY woven-wire / poly mesh, 8 ft</td><td class="n">$2&ndash;6</td><td class="n">$2,000&ndash;6,000</td><td>Farm labor does it; most cost-effective</td></tr>
+      <tr><td>Professionally installed</td><td class="n">$5&ndash;12</td><td class="n">$5,000&ndash;12,000</td><td>Faster, higher upfront</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote"><span class="src">Deer-fence pricing: HomeGuide, dtefence, Angi, Design Transition Studio (Jun 2026). Scales with perimeter, which scales with field size/row count.</span></p>
+
+  <!-- ============ 8 SPRAY ============ -->
+  <h2 id="spray"><span class="num">8</span>Spray program &amp; plant health</h2>
+  <p class="lede">A plan for keeping plants healthy with sprays that are legal in New York cannabis, organic-approved, and safe for resin quality and extraction.</p>
+  <div class="owners">
+    <span class="owner">Likely: Alec (plant health) with Athena Ag protocol</span>
+  </div>
+  <div class="pendnote">Brett &amp; Owen at Athena Ag are advisors on nutrient and pest/disease program; owners pending team discussion.</div>
+
+  <div class="flag box">
+    <b class="h">Compliance gate — read before buying any product</b>
+    In New York cannabis, a spray being "organic" or OMRI-listed is <strong>necessary but not sufficient</strong>. It must <strong>also</strong> be on the list of pesticides the Office of Cannabis Management (OCM) allows for cannabis, every application must be <strong>logged in our inventory tracking system</strong>, and residues must pass the OCM testing panel — some products (e.g., myclobutanil) trigger automatic batch failure. <strong>Do not treat any product as approved until it is verified against the current OCM list and our advisor's protocol.</strong> This document gives the framework, not a cleared product list.
+  </div>
+
+  <h3>How to build the actual list (the gate every product passes)</h3>
+  <ol>
+    <li><strong>OMRI-listed</strong> — organic-approved active.</li>
+    <li><strong>OCM-allowed for NY cannabis</strong> — on the state's permitted list for cannabis cultivation.</li>
+    <li><strong>Extraction- &amp; resin-safe</strong> — nothing that taints flavor/aroma or concentrates through extraction and shows up on a COA.</li>
+    <li><strong>Athena Ag protocol fit</strong> — consistent with our advisors' program.</li>
+    <li><strong>Logged</strong> — every application recorded in inventory tracking, with rate and date.</li>
+  </ol>
+
+  <h3>Program shape (fill products after verification)</h3>
+  <table>
+    <thead><tr><th>Mode</th><th>Purpose</th><th>Typical organic categories to verify</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Preventative</strong> (scheduled)</td><td>Stop problems before they start — the bulk of the program</td><td>Biological fungicides (e.g., <em>Bacillus</em>-based), neem/azadirachtin-type botanicals, beneficial insects/biocontrols, foliar plant-health inputs — each to be confirmed OCM-allowed</td></tr>
+      <tr><td><strong>Reactive</strong> (as-needed)</td><td>Knock down a specific pest or disease on detection</td><td>Targeted OMRI insecticidal/fungicidal actives matched to the diagnosed problem — confirmed OCM-allowed and extraction-safe</td></tr>
+    </tbody>
+  </table>
+  <div class="note box">
+    <b class="h">Build deliverables (next, with the advisor)</b>
+    (1) A <strong>dated preventative spray calendar</strong> — what, when, at what rate, through the season. (2) A <strong>reactive playbook</strong> — "if you see X, do Y," with the specific verified products and rates. (3) A <strong>materials + cost list</strong> for both. All gated on the OCM-list + Athena verification above.
+  </div>
+
+  <h3>Application equipment</h3>
+  <p>A <strong>tractor-mounted sprayer</strong> lets one person cover the field quickly. A standard 60-gallon 3-point-hitch unit with pump and boom runs roughly <strong>$700&ndash;1,800</strong>.</p>
+  <div class="heur box">
+    <b class="h">Important: spec the nozzles for tall canopy, not turf</b>
+    Off-the-shelf 3-point sprayers ship with flat broadcast booms meant for turf/row crops — a horizontal swath. Tall cannabis needs <strong>vertical / directed application</strong> (drop nozzles or a vertical boom, or the handgun) to coat the canopy top-to-bottom. The right nozzle configuration needs grower input before purchase. <span class="src">[Sprayer pricing: Tractor Supply, Home Depot, Farm &amp; Home Supply, Jun 2026 — estimate.]</span>
+  </div>
+
+  <!-- ============ 9 GENETICS ============ -->
+  <h2 id="genetics"><span class="num">9</span>Genetics selection</h2>
+  <p class="lede">Which plants we run matters as much as how we grow them. For NY outdoor, the genetics should be chosen to survive a wet Northeast finish and beat the frost.</p>
+  <div class="owners"><span class="owner">Likely: Max + advisors, against the criteria below</span></div>
+  <div class="pendnote">Final cultivar selection pending genetics-source conversation and Athena Ag input.</div>
+
+  <p>Prioritize cultivars by these traits, in roughly this order:</p>
+  <ol>
+    <li><strong>Disease resistance</strong> — especially <em>Botrytis</em> (bud rot) and <em>Septoria</em> (leaf spot), the two that punish a wet Northeast fall. Favor structures that are dense-but-airy, not tight and moisture-trapping.</li>
+    <li><strong>Early finish</strong> — cultivars that mature in late September / early October, before hard frost and the worst rain. A late-finisher can lose the crop to weather regardless of how well it's grown.</li>
+    <li><strong>Proven outdoor / Northeast performance</strong> — vigor in shorter seasons and cooler nights.</li>
+    <li><strong>Market fit</strong> — potency, aroma, and yield that the brand and buyers want.</li>
+  </ol>
+  <div class="heur box">
+    <b class="h">Verify resistance claims — don't take marketing at face value</b>
+    Breeder "mold-resistant" labels vary widely in reliability. Vet candidate cultivars against these criteria with the genetics source and Athena Ag, and lean on local Northeast outdoor track record where it exists, before committing the order.
+  </div>
+
+  <!-- ============ 10 PEOPLE ============ -->
+  <h2 id="people"><span class="num">10</span>People, hours &amp; hiring</h2>
+  <p class="lede">Who does what (likely, pending discussion), roughly how much labor each project takes, and the standard we hold for anyone we bring on.</p>
+
+  <h3>Likely owners by function (pending team discussion)</h3>
+  <table>
+    <thead><tr><th>Person</th><th>Likely scope</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Max</strong></td><td>Primary on most things. Leads the grow tents and the care of the plants; crew lead on the pot fill. Marco supports across his areas.</td></tr>
+      <tr><td><strong>Marco</strong></td><td>Supports Max across grow tents, plant care, prop house, and fill.</td></tr>
+      <tr><td><strong>Alec</strong></td><td>Leads irrigation (he raised it; coordinate with Soilscape/Sam). Also: water test, greenhouse/structure design input, tractor driving during the fill, plant health, and setting up cameras, sensors, and remote data/monitoring.</td></tr>
+      <tr><td><strong>Athena Ag (Brett &amp; Owen)</strong></td><td>Advisors — nutrient and pest/disease protocol, fill-system guidance, spacing. Not on-site owners.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Rough labor by project</h3>
+  <table>
+    <caption>Estimates to size the crew — refine with the leads. Several projects overlap in time.</caption>
+    <thead><tr><th>Project</th><th class="n">Person-hours</th><th class="n">People</th><th>Window</th></tr></thead>
+    <tbody>
+      <tr><td>P1 · Warehouse + tents</td><td class="n">~40&ndash;70</td><td class="n">2</td><td>Week 1</td></tr>
+      <tr><td>P2 · Prop house</td><td class="n">~50&ndash;90</td><td class="n">3&ndash;4</td><td>Weeks 1&ndash;2</td></tr>
+      <tr><td>P3 · Irrigation install</td><td class="n">~80&ndash;160</td><td class="n">3&ndash;4</td><td>Weeks 2&ndash;4</td></tr>
+      <tr><td>P4 · Pot fill (all hands)</td><td class="n">~140&ndash;160</td><td class="n">8&ndash;9</td><td>Weeks 3&ndash;4</td></tr>
+      <tr><td>Trellis + deer fence</td><td class="n">~60&ndash;120</td><td class="n">2&ndash;4</td><td>Weeks 1&ndash;4</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Hiring standard — for every role, even part-time</h3>
+  <div class="flag box">
+    <b class="h">Only great people — mediocre hires cost us the time of our best people</b>
+    We are looking for additional part-time coverage, but the bar stays high even for lower-level seasonal roles. A weak hire doesn't just underperform — they pull our strongest people off their work to manage, correct, and redo. Be deliberate and selective. A smaller, excellent crew beats a larger, uneven one.
+  </div>
+
+  <!-- ============ 11 SECURITY ============ -->
+  <h2 id="security"><span class="num">11</span>Security, monitoring &amp; data</h2>
+  <p class="lede">Protecting the crop physically, watching conditions remotely, and being disciplined about who knows what.</p>
+  <div class="owners"><span class="owner">Likely: Alec (cameras, sensors, data)</span></div>
+  <div class="pendnote">Owner likely but pending team discussion.</div>
+
+  <h3>Get up before plants are in the ground</h3>
+  <ul>
+    <li><strong>Security cameras</strong> covering the field, entry points, and the warehouse/prop area. If field power is limited, use cellular/solar units. A high-value outdoor crop is a theft target.</li>
+    <li><strong>Remote environmental sensors</strong> in the grow tents and prop house (temperature, humidity) with alerts — so a climate failure is caught from a phone, not discovered dead the next morning.</li>
+    <li><strong>Remote soil-moisture sensors</strong> in the field, tied to the irrigation, so under- or over-watering is visible before plants show stress. This is also the early-warning system for the watering-failure risk.</li>
+  </ul>
+  <table>
+    <caption>Rough planning estimates, Jun 2026 — verify with quotes.</caption>
+    <thead><tr><th>Item</th><th class="n">Ballpark</th></tr></thead>
+    <tbody>
+      <tr><td>Security camera system (4&ndash;8 cams, cellular/solar if needed)</td><td class="n">$300&ndash;2,000</td></tr>
+      <tr><td>Environmental sensors (tents/prop) with remote alerts</td><td class="n">$100&ndash;800</td></tr>
+      <tr><td>Soil-moisture sensors (field) with remote readout</td><td class="n">$100&ndash;1,000</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Visitors &amp; information discipline</h3>
+  <div class="note box">
+    <b class="h">Approve everyone; share narrowly</b>
+    Any part-time labor, helper, or visitor must be <strong>approved</strong> before they're on site. Be thoughtful about what information is shared with whom — site details, security setup, genetics, volumes, and timing are sensitive. Default to sharing only what someone needs for their specific role.
+  </div>
+
+  <!-- ============ 12 BUDGET ============ -->
+  <h2 id="budget"><span class="num">12</span>Equipment list &amp; budget</h2>
+  <p class="lede">The per-project equipment tables above are the full purchase list. This rolls them into one budget. Items that scale with plant count are noted.</p>
+
+  <div class="note box">
+    <b class="h">Read the numbers honestly</b>
+    These are <strong>rough planning ranges from web research dated June 2026</strong>, not quotes. They exist to size the budget and spot the big swings, not to commit dollars. Each owner confirms real pricing before purchase. The total range is wide mostly because of one line: soil.
+  </div>
+
+  <table>
+    <caption>Budget roll-up — rough ranges, Jun 2026.</caption>
+    <thead><tr><th>Line</th><th class="n">Ballpark range</th><th>Scales with plants?</th></tr></thead>
+    <tbody>
+      <tr><td>P1 · Warehouse + grow tents</td><td class="n">$3,300&ndash;11,000</td><td>Weakly (tent count)</td></tr>
+      <tr><td>P2 · Propagation house</td><td class="n">$2,100&ndash;8,400</td><td>Weakly (mostly fixed)</td></tr>
+      <tr><td>P3 · Irrigation &amp; fertigation</td><td class="n">$2,500&ndash;11,000</td><td>Yes (emitters, sub-line)</td></tr>
+      <tr><td>P4 · Pot matrix (pots + soil + fill)</td><td class="n">$19,600&ndash;47,300</td><td><strong>Yes — soil &amp; pots linear</strong></td></tr>
+      <tr><td>Trellis + tractor access</td><td class="n">$2,000&ndash;6,000</td><td>Yes (row count)</td></tr>
+      <tr><td>Deer fence (~1,000 LF)</td><td class="n">$2,000&ndash;12,000</td><td>Yes (perimeter)</td></tr>
+      <tr><td>Cold-frame option (if chosen)</td><td class="n">$0&ndash;5,000</td><td>Yes (row count)</td></tr>
+      <tr><td>Tractor-mounted sprayer</td><td class="n">$700&ndash;1,800</td><td>No</td></tr>
+      <tr><td>Cameras + sensors</td><td class="n">$500&ndash;3,800</td><td>No</td></tr>
+      <tr><td>Clones (~1,000 @ ~$10)</td><td class="n">~$10,000</td><td>Yes (linear)</td></tr>
+    </tbody>
+    <tfoot><tr><td>Indicative total (excl. reefer, already committed)</td><td class="n">~$44,700&ndash;128,300</td><td></td></tr></tfoot>
+  </table>
+  <div class="flag box">
+    <b class="h">What drives the spread</b>
+    The gap between the low and high total is mostly: <strong>soil grade</strong> (bulk blend vs. premium), <strong>deer fence</strong> (DIY vs. installed), and <strong>irrigation scope</strong>. Nail the soil quote first — it moves the total more than anything else. The clone line (~$10,000) is a prior placeholder to confirm against an actual quote. The reefer is already a committed purchase and is not in this scope.
+  </div>
+
+  <!-- ============ 13 FAILURE ============ -->
+  <h2 id="failure"><span class="num">13</span>Most likely ways this goes wrong</h2>
+  <p class="lede">Named honestly and in order of likelihood, with the move that prevents each. Awareness is the cheapest insurance.</p>
+  <table>
+    <thead><tr><th class="n">#</th><th>Failure mode</th><th>Why it's likely</th><th>Prevention</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>Timeline slip</strong> — field not ready when roots show</td><td>Four parallel builds + long-lead orders + a hard biological deadline</td><td>Order the week-one list now; protect the critical path (design → soil → fill → drip); pad the fill to 2 days</td></tr>
+      <tr><td class="n">2</td><td><strong>Watering failure</strong> — uneven or interrupted water</td><td>1,000 emitters on one system; a pump or clog fails silently</td><td>Use a designer; filtration; controller with alerts; soil-moisture sensors; daily checks</td></tr>
+      <tr><td class="n">3</td><td><strong>Disease in a wet finish</strong> — botrytis / septoria</td><td>Northeast fall is humid and rainy; dense flower traps moisture</td><td>Airflow-first spacing (5&prime;&times;6&prime;), resistant + early genetics, preventative spray calendar, cold-frame option on standby</td></tr>
+      <tr><td class="n">4</td><td><strong>Bottleneck breaks the plant flow</strong> — heat on asphalt, fill jams, clone quality</td><td>Asphalt cooks pots; first-time fill crew; clones can arrive weak</td><td>Tables off asphalt + shade cloth; conservative fill plan + all-hands; inspect clones on arrival, isolate anything suspect</td></tr>
+      <tr><td class="n">5</td><td><strong>Security / labor</strong> — theft, deer, or a weak hire</td><td>High-value outdoor crop; seasonal hiring pressure; open site</td><td>Deer fence + cameras before transplant; high hiring bar; approve all visitors; share information narrowly</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ 14 DECISIONS ============ -->
+  <h2 id="decisions"><span class="num">14</span>Open decisions to confirm</h2>
+  <p class="lede">The holes. None are papered over with guesses. Each needs an answer to lock the plan.</p>
+  <ol class="check">
+    <li><strong>Irrigation designer — engage Soilscape (Sam)?</strong> Most time-sensitive call. Recommendation: yes, to de-risk the one system that must run flawlessly. <em>This week.</em></li>
+    <li><strong>Down-row spacing — ~5&prime; or ~6&prime; between pairs?</strong> Sets row count (13&ndash;16) and fence length. Confirm with Brett + against real field width.</li>
+    <li><strong>Real field dimensions.</strong> Provide the marked-up site map so the drawing, row count, and fence length go to scale (area may be wider than older images show).</li>
+    <li><strong>Grow-tent count.</strong> Confirm against the 25-per-tray clone shipment (~40 trays). Gates the tent + kit order.</li>
+    <li><strong>Soil vendor &amp; delivered price.</strong> Get quotes; confirm container-ready vs. needs amending. Biggest budget swing.</li>
+    <li><strong>Pot vendor &amp; true fill volume.</strong> Confirm the maker's actual volume (trade-size varies ~10%) before the soil order.</li>
+    <li><strong>Trellis / cold-frame choice.</strong> Plain trellis, tall posts on standby, or full cover.</li>
+    <li><strong>Spray list.</strong> Verify products against the OCM-allowed list + Athena protocol + extraction safety; then build the calendar + reactive playbook.</li>
+    <li><strong>Genetics.</strong> Select resistant, early-finishing cultivars with the genetics source + Athena.</li>
+    <li><strong>Clone arrival date (~Jun 15&ndash;18).</strong> The whole timeline anchors to it — confirm with the supplier.</li>
+  </ol>
+
+  <footer>
+    Hudson Harvest 2026 &middot; Field Build Plan &middot; Baseline 1,000 plants (scales on the per-plant rates above) &middot; Generated June 1, 2026.<br>
+    Specs and sizes are starting heuristics for the team to finalize; the owner of each project confirms and signs off. Prices are rough planning estimates from June 2026 web research unless a quote is noted — not quotes. Field drawing is schematic pending real site dimensions.
+  </footer>
+
+</div>
+
+<script>
+  // Make in-page table-of-contents links scroll within the page instead of opening a new view.
+  document.querySelectorAll('a[data-scroll]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var t = document.getElementById(a.getAttribute('data-scroll'));
+      if (t) t.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+</script>
+</body>
+</html>
