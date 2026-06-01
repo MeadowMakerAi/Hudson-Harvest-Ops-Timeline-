@@ -107,6 +107,26 @@
   .check{list-style:none;margin-left:0}
   .check li{padding-left:26px;position:relative}
   .check li:before{content:"\2610";position:absolute;left:2px;top:-1px;font-size:17px;color:var(--green)}
+
+  /* readability layer: hero + summary + collapsibles */
+  .hero{background:#fff4e6;border:1px solid #e6cf99;border-left:5px solid var(--amber);border-radius:9px;padding:15px 18px;margin:18px 0}
+  .hero .heroh{font-family:Verdana,sans-serif;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:#7a4e04;font-weight:700;margin-bottom:8px}
+  .hero ol{margin:6px 0 2px 20px;font-size:14.5px}
+  .hero li{margin:4px 0}
+  .hero .when{font-family:Verdana,sans-serif;font-size:10.5px;font-weight:700;color:#5e3d04;background:#f7eccf;border:1px solid #e6cf99;border-radius:5px;padding:1px 7px;margin-left:5px}
+  .hero .foot{font-size:12.5px;color:var(--ink-soft);margin:9px 0 0}
+  table.summary{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:13px;background:var(--card)}
+  table.summary caption{caption-side:top;text-align:left;font-family:Verdana,sans-serif;font-size:11px;color:var(--ink-soft);padding-bottom:4px}
+  table.summary th{background:var(--green);color:#fff;font-family:Verdana,sans-serif;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:8px 10px;text-align:left}
+  table.summary td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+  table.summary tbody tr:nth-child(even){background:#faf8f0}
+  table.summary .pj{font-weight:700;color:var(--ink);white-space:nowrap}
+  details.costbox{margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card);overflow:hidden}
+  details.costbox>summary{cursor:pointer;list-style:none;padding:10px 14px;font-family:Verdana,sans-serif;font-size:12px;font-weight:700;color:#16384c;background:var(--blue-soft);user-select:none}
+  details.costbox>summary::-webkit-details-marker{display:none}
+  details.costbox>summary::before{content:"\25B8";margin-right:8px;color:var(--blue)}
+  details.costbox[open]>summary::before{content:"\25BE"}
+  details.costbox>:not(summary){margin:10px 14px}
 </style>
 </head>
 <body>
@@ -121,6 +141,40 @@
 </header>
 
 <div class="wrap">
+
+  <div class="hero">
+    <div class="heroh">&#9656; This week (Jun 1&ndash;7) &mdash; order/engage these, or the timeline slips</div>
+    <ol>
+      <li><strong>Engage the irrigation designer</strong> (Soilscape / Sam)<span class="when">most urgent</span></li>
+      <li><strong>Get soil quotes &amp; book delivery</strong> &mdash; ~190 cu yd, ~4 loads</li>
+      <li><strong>Order 45-gal pots</strong> (1,030)</li>
+      <li><strong>Order grow tents + LED + climate kit</strong></li>
+      <li><strong>Order the prop-house tunnel + shade cloth</strong><span class="when">by ~Jun 6</span></li>
+    </ol>
+    <p class="foot">Order-<em>by</em> dates &mdash; not need-by &mdash; are what matter now. Full timeline in &sect;1.</p>
+  </div>
+
+  <table class="summary">
+    <caption>At a glance &mdash; who owns what, and when (full detail in each section)</caption>
+    <thead><tr><th>Project</th><th>Owner(s)</th><th>Order / engage by</th><th>Ready by</th></tr></thead>
+    <tbody>
+      <tr><td class="pj">P1 &middot; Warehouse + tents</td><td>Max (Marco teams)</td><td>This week</td><td>~Jun 14</td></tr>
+      <tr><td class="pj">P2 &middot; Prop house</td><td>Max + Marco; Alec (structure)</td><td>~Jun 6</td><td>~Jun 20</td></tr>
+      <tr><td class="pj">P3 &middot; Irrigation</td><td>Alec + Soilscape/Sam</td><td>Design now; parts ~Jun 9</td><td>Before transplant</td></tr>
+      <tr><td class="pj">P4 &middot; Pot matrix</td><td>Max + all-hands; Alec (tractor)</td><td>This week</td><td>~Jun 24</td></tr>
+      <tr><td class="pj">Trellis + deer fence</td><td>Max + Marco; Alec (layout)</td><td>~Jun 9</td><td>By transplant</td></tr>
+    </tbody>
+  </table>
+
+  <table class="summary">
+    <caption>Standing roles</caption>
+    <thead><tr><th>Person</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td class="pj">Marco</td><td>Head of Resin Quality Management &mdash; trichome monitoring, harvest-timing advice, fresh-frozen optimization. Teams with Max on the build.</td></tr>
+      <tr><td class="pj">Steven</td><td>Remote monitoring &amp; crop nutrition.</td></tr>
+      <tr><td class="pj">Athena Ag (Brett &amp; Owen)</td><td>Advisors &mdash; nutrient &amp; pest/disease protocol, spacing, fill-system guidance.</td></tr>
+    </tbody>
+  </table>
 
   <div class="note box" style="margin-top:18px">
     <b class="h">How to read this document</b>
@@ -375,7 +429,7 @@
     Clones are expected to arrive <strong>25 cuttings per tray</strong>, so ~1,000 plants ≈ <strong>~40 trays</strong>. Those trays need only short-term recovery space, packed fairly tight, before up-potting. <strong>Max confirms the exact tent count against the tray footprint before ordering.</strong> Equipment (lights, humidifier, fans, filter) must then be <strong>sized to the final tent count and tent volume</strong> — the quantities below are a starting frame, not a final order.
   </div>
 
-  <h3>Equipment &amp; ballpark cost</h3>
+  <details class="costbox"><summary>Equipment &amp; ballpark cost &mdash; tap to expand</summary>
   <table>
     <caption>Rough planning estimates, Jun 2026. Confirm against final tent count + actual quotes.</caption>
     <thead><tr><th>Item</th><th>Why</th><th class="n">Qty (1,000 plants)</th><th class="n">Ballpark</th></tr></thead>
@@ -390,7 +444,7 @@
       <tr><td>Cleaning + sanitizer supplies</td><td>Deep clean before plants</td><td class="n">bulk</td><td class="n">$100&ndash;300</td></tr>
     </tbody>
     <tfoot><tr><td colspan="3">Project 1 subtotal (rough)</td><td class="n">~$3,300&ndash;11,000</td></tr></tfoot>
-  </table>
+  </table></details>
   <p class="footnote"><span class="src">Tent/LED prices: LED Grow Lights Depot, HTG Supply, Growers House (Jun 2026). Other items: commodity ranges, rough estimate — verify with quotes. Scales weakly with plant count; driven mostly by tent count.</span></p>
 
   <p><strong>Effort:</strong> roughly <strong>40&ndash;70 person-hours</strong>, ~2 people, spread across week one (clean is the time sink; assembly and climate are fast). <em>Estimate — refine with Max.</em></p>
@@ -430,7 +484,7 @@
   </table>
   <p class="footnote">Erring large here is deliberate: crowding young plants is a disease risk, and a bigger tunnel costs only a little more at ~$2&ndash;5/sq ft. The owner finalizes the size against the actual table build and site.</p>
 
-  <h3>Equipment &amp; ballpark cost</h3>
+  <details class="costbox"><summary>Equipment &amp; ballpark cost &mdash; tap to expand</summary>
   <table>
     <caption>Rough planning estimates, Jun 2026.</caption>
     <thead><tr><th>Item</th><th>Why</th><th class="n">For 1,000 plants</th><th class="n">Ballpark</th></tr></thead>
@@ -443,7 +497,7 @@
       <tr><td>Fans</td><td>Airflow, stem strength, mold prevention</td><td class="n">2&ndash;4</td><td class="n">$100&ndash;400</td></tr>
     </tbody>
     <tfoot><tr><td colspan="3">Project 2 subtotal (rough)</td><td class="n">~$2,100&ndash;8,400</td></tr></tfoot>
-  </table>
+  </table></details>
   <p class="footnote"><span class="src">Tunnel pricing: Farmers Friend ($1.77&ndash;2.02/sq ft kits), Bootstrap Farmer (&lt;$5/sq ft built; 20&prime;&times;100&prime; ~$1,600 kit), Jun 2026. Tables can be near-free from scrap lumber/pallets. Mostly fixed cost; does not scale much with plant count.</span></p>
 
   <p><strong>Effort:</strong> roughly <strong>50&ndash;90 person-hours</strong>, ~3&ndash;4 people, ~3&ndash;5 days (tunnel raise + tables are the bulk). <em>Estimate — refine with the leads.</em></p>
@@ -482,7 +536,7 @@
     Running a system and <em>designing</em> one are different skills. Sizing emitter flow, pipe diameter, manifold layout, and pump head against 1,000 pots — possibly on a slope — is specialized. Get it wrong and water is uneven, which means plants mature unevenly and the "transplant when roots show" rule breaks down across the field. <strong>Soilscape Solutions (Sam)</strong> is a strong candidate: a designer who can also supply the parts, which often means the design work comes free or cheap when the parts are bought through them. A few hundred dollars of design de-risks the one system that simply has to run flawlessly. Worth a conversation this week. Trimming this to save money is a false economy.
   </div>
 
-  <h3>Equipment &amp; ballpark cost</h3>
+  <details class="costbox"><summary>Equipment &amp; ballpark cost &mdash; tap to expand</summary>
   <p>Parts <strong>counts</strong> scale cleanly (1 emitter per plant, 1 manifold per row). Parts <strong>sizing</strong> (pump, pipe diameter, regulator) comes from the design. Treat the table as the shopping frame; the designer fills exact specs and firm prices.</p>
   <table>
     <caption>Rough planning estimates, Jun 2026 — design-dependent. Sam's (or Alec's) quote governs.</caption>
@@ -496,7 +550,7 @@
       <tr><td>Captive-air tank (optional)</td><td>Anti short-cycle / hose pressure</td><td class="n">0&ndash;1, designer's call</td><td class="n">$0&ndash;800</td></tr>
     </tbody>
     <tfoot><tr><td colspan="3">Project 3 subtotal (rough)</td><td class="n">~$2,500&ndash;11,000</td></tr></tfoot>
-  </table>
+  </table></details>
   <p class="footnote"><span class="src">Component ranges are commodity/market estimates, Jun 2026; the design quote replaces them. Sub-line and emitter counts scale linearly with plant count.</span></p>
 
   <p><strong>Effort:</strong> design is separate (designer + Alec). Install across 16 rows is the labor item: roughly <strong>80&ndash;160 person-hours</strong>, ~3&ndash;4 people over several days, overlapping pot placement. <em>Estimate — refine after design.</em></p>
@@ -576,7 +630,7 @@
     </tbody>
   </table>
 
-  <h3>Equipment &amp; ballpark cost</h3>
+  <details class="costbox"><summary>Equipment &amp; ballpark cost &mdash; tap to expand</summary>
   <table>
     <caption>Rough planning estimates, Jun 2026. Soil is the dominant line and the biggest variable.</caption>
     <thead><tr><th>Item</th><th class="n">For 1,000 plants</th><th class="n">Per-plant rate</th><th class="n">Ballpark</th></tr></thead>
@@ -590,7 +644,7 @@
       <tr><td>Surge labor (beyond owners)</td><td class="n">~4&ndash;5 hands &times; 2 days</td><td class="n">&mdash;</td><td class="n">$1,300&ndash;3,000</td></tr>
     </tbody>
     <tfoot><tr><td colspan="3">Project 4 subtotal (rough) — soil-driven</td><td class="n">~$15,700&ndash;41,800</td></tr></tfoot>
-  </table>
+  </table></details>
   <div class="flag box">
     <b class="h">Soil grade is the single biggest swing in the whole budget</b>
     A bulk organic blend by the yard runs roughly <strong>$50&ndash;150/cu yd delivered</strong>; a premium bagged/living-soil mix can hit <strong>~$218/cu yd</strong> — which would roughly double the soil line to ~$41k. At ~190 yards, the sourcing decision is worth more than $20,000. Get quotes from local blenders (e.g., Hudson Soil Co. and other Hudson Valley / Orange County suppliers) and confirm whether the blend is container-ready or needs amending for cannabis. <span class="src">[Pricing: Rock Pile, Got Mulch, Soil3, Home Depot bagged ceiling, Jun 2026 — estimate, get quotes.]</span>
